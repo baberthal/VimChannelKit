@@ -1,0 +1,14 @@
+author: J. Morgan Lieberthal
+github_url: https://github.com/baberthal/SocketServer
+
+theme: fullwidth
+clean: true
+min_acl: internal
+docset_path: SocketServer.docset
+
+readme: README.md
+
+skip_undocumented: false
+hide_documentation_coverage: false
+
+xcodebuild_arguments: [-scheme, SocketServer]
