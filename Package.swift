@@ -1,11 +1,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "SocketServer",
+    name: "VimChannelKit",
     targets: [
         Target(name: "LoggerAPI", dependencies: []),
-        Target(name: "SocketServer", dependencies: ["LoggerAPI"]),
-        Target(name: "example-channel", dependencies: ["SocketServer", "LoggerAPI"])
+        Target(name: "Channel", dependencies: ["LoggerAPI"]),
+        Target(name: "example-channel", dependencies: ["Channel", "LoggerAPI"])
     ],
     dependencies: [
         .Package(url: "https://github.com/baberthal/Yajl.git", "0.2.1"),

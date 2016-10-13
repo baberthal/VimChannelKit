@@ -1,7 +1,7 @@
 ################################################################################
-#                             SocketServer Makefile                            #
+#                            VimChannelKit Makefile                            #
 ################################################################################
-PROJECT_NAME := SocketServer
+PROJECT_NAME := VimChannelKit
 
 # Hack for xcode not being able to load the thread sanitizer
 CLANG_LIBDIR = $(realpath $(dir $(shell xcrun --find clang))/../lib/clang)
