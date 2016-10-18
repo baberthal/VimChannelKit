@@ -7,7 +7,7 @@
 //
 
 import Dispatch
-import Yajl
+import SwiftyJSON
 
 public final class Vim {
   /// This is really just a namespace...

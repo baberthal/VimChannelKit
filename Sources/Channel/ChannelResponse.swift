@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Yajl
+import SwiftyJSON
 
 /// This class implements the `ChannelSendable` protocol for outgoing responses
 /// to a `ChannelRequest`.
@@ -71,8 +71,8 @@ public class ChannelResponse: ChannelSendable {
   ///
   /// - parameter json: The JSON struct that contains the data to be added.
   /// - throws: Socket.error if an error occurred while writing to the socket
-  public func write(from json: JSONRepresentable) throws {
-    let message: JSONRepresentable = [self.id, json]
+  public func write(from json: JSON) throws {
+    let message: JSON = [self.id, json]
     
     let jsonData = try message.rawData()
     try write(from: jsonData)

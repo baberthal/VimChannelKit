@@ -9,7 +9,7 @@
 import Foundation
 import Socket
 import LoggerAPI
-import Yajl
+import SwiftyJSON
 
 /// This class is responsible for parsing incoming messages and encoding outgoing messages
 ///
@@ -31,9 +31,6 @@ public class ChannelRequest: ChannelReceivable {
 
   // MARK: - Private
 
-  /// The Yajl parser swift wrapper
-  private var yajlParser: YajlParser?
-
   /// Client socket
   private var clientSocket: Socket
 
@@ -41,10 +38,13 @@ public class ChannelRequest: ChannelReceivable {
   private var status = MessageParserStatus()
 
   /// Chunk of message read in from the socket
-  private var bodyChunk = BufferList()
+  fileprivate var bodyChunk = BufferList()
 
   /// Buffer for parsing
   private var buffer = Data(capacity: ChannelRequest.bufferSize)
+
+  /// helper for YajlParserDelegate
+  fileprivate var hasSeenArray = false
 
   // MARK: - Initializers
   
@@ -55,7 +55,7 @@ public class ChannelRequest: ChannelReceivable {
     self.clientSocket = socket
   }
 
-  // MARK: - Functions
+  // MARK: - Internal Functions
 
   /// Read data from the message into our abstraction
   ///
@@ -63,7 +63,7 @@ public class ChannelRequest: ChannelReceivable {
   /// - returns: True if everything was successful
   @discardableResult
   func parse(_ buffer: NSData) -> MessageParserStatus {
-    var length = buffer.length
+    let length = buffer.length
 
     guard length > 0 else {
       status.error = .unexpectedEOF
@@ -74,33 +74,17 @@ public class ChannelRequest: ChannelReceivable {
       reset()
     }
 
-    while status.state != .messageComplete && status.error == nil {
-      let bytes = Data(referencing: buffer)
-
-      let (id, bytesParsed) = self.execute(bytes)
-
-      if id == 0 {
-        status.error = .invalidJSON
-        return status
-      }
-
-      self.id = id
-
-      if bytesParsed != length {
-        if self.status.state == .reset {
-          self.reset()
-        } else {
-          self.status.error = .parsedTooFew
-        }
-      } else {
-        self.status.state = .messageComplete
-      }
-
-      length -= bytesParsed
-    }
-
     return status
   }
+
+  func prepareReset() {
+    status.state = .reset
+  }
+
+  func release() {
+  }
+
+  // MARK: - Public Functions
 
   /// Read a chunk of the body of the message.
   ///
@@ -149,64 +133,23 @@ public class ChannelRequest: ChannelReceivable {
   ///
   /// - throws: if an error occurs while reading data.
   /// - returns: the json object of the body
-  public func readJSON() throws -> JSONRepresentable {
+  public func readJSON() throws -> JSON {
     buffer.count = 0
 
     let len = try read(into: &buffer)
 
     if len > 0 {
-      return JSONRepresentable(data: buffer)!
+      let json = JSON(data: buffer)
+      return json
     }
 
     return nil
   }
 
-  func prepareReset() {
-    status.state = .reset
-  }
-
   // MARK: - Private Functions
-
-  /// - returns: (ID, Number of Body Bytes)
-  private func execute(_ data: Data) -> (Int, Int) {
-    var result = (0, 0)
-
-    do {
-      let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-
-      if let id = json[0].int {
-        result.0 = id
-      } else {
-        self.status.error = .invalidJSON
-
-        if let error = json.error {
-          Log.error("Invalid JSON -- (\(error.localizedDescription): \(error.localizedFailureReason)")
-        } else {
-          Log.error("Invalid JSON")
-        }
-        return result
-      }
-
-      let bodyData = getRawData(json)
-
-      result.1 = bodyData.count + 1 // to account for NULL terminator in the original string
-
-      self.bodyChunk.append(data: bodyData)
-
-    } catch let error as NSError {
-      self.status.error = .invalidJSON
-      Log.error("Invalid JSON Object. -- (\(error.code)): \(error.localizedDescription)")
-    }
-      
-    return result
-  }
 
   private func reset() {
     bodyChunk.reset()
     status.reset()
   }
-}
-
-extension ChannelRequest: YajlParserDelegate {
-
 }

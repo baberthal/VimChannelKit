@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Yajl
+import SwiftyJSON
 
 /// With a JSON channel the process can send commands to Vim that will be
 /// handled by Vim internally, it does not require a handler for the channel.
@@ -63,7 +63,7 @@ public final class VimCommand {
       self.forced = forced
     }
 
-    public var json: JSONRepresentable {
+    public var json: JSON {
       return ["redraw", forced ? "force" : ""]
     }
   }
@@ -92,7 +92,7 @@ public final class VimCommand {
       self.command = command
     }
 
-    public var json: JSONRepresentable {
+    public var json: JSON {
       return ["ex", command]
     }
   }
@@ -117,7 +117,7 @@ public final class VimCommand {
       self.command = command
     }
 
-    public var json: JSONRepresentable {
+    public var json: JSON {
       return ["normal", command]
     }
   }
@@ -177,7 +177,7 @@ public final class VimCommand {
       self.id = id
     }
 
-    public var json: JSONRepresentable {
+    public var json: JSON {
       if let id = self.id {
         return ["expr", expression, id]
       }
@@ -205,7 +205,7 @@ public final class VimCommand {
     public var function: String
 
     /// The arguments to the function
-    public var arguments: JSONRepresentable
+    public var arguments: JSON
 
     /// An optional message number.  This is nil by default.
     /// If this is set, vim will send a response to the expression command,
@@ -218,7 +218,7 @@ public final class VimCommand {
     /// - parameter args: The arguments to pass to `function`.
     /// - parameter id: The `id` of the message. Set this if you want to
     ///   receive a response from Vim.
-    public init(_ function: String, _ args: JSONRepresentable, _ id: Int? = nil) {
+    public init(_ function: String, _ args: JSON, _ id: Int? = nil) {
       self.function = function
       self.arguments = args
       self.id = id
@@ -230,11 +230,11 @@ public final class VimCommand {
     /// - parameter args: The arguments to pass to `function`.
     /// - parameter id: The `id` of the message. Set this if you want to
     ///   receive a response from Vim.
-    public init(function: String, args: JSONRepresentable, id: Int? = nil) {
+    public init(function: String, args: JSON, id: Int? = nil) {
       self.init(function, args, id)
     }
 
-    public var json: JSONRepresentable {
+    public var json: JSON {
       if let id = self.id {
         return ["call", function, arguments, id]
       }
@@ -282,7 +282,7 @@ public final class VimCommand {
   /// - parameter args: A json-compatible array with arguments to the function.
   /// - parameter id: An optional id. If this is set, Vim will send a response.
   /// - returns: a `Call` command.
-  public static func call(function: String, args: JSONRepresentable, id: Int? = nil) -> Call {
+  public static func call(function: String, args: JSON, id: Int? = nil) -> Call {
     return Call(function: function, args: args, id: id)
   }
 }
@@ -290,7 +290,7 @@ public final class VimCommand {
 
 extension VimCommandLike {
   public func jsonString(using encoding: String.Encoding) -> String? {
-    return json.rawString(using: encoding)
+    return json.rawString(encoding)
   }
 
   public func rawData() throws -> Data {

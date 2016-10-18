@@ -11,7 +11,7 @@ import Dispatch
 import LoggerAPI
 import Socket
 
-public class VimSocketProcessor: IncomingSocketProcessor {
+public class VimSocketProcessor: IncomingDataProcessor {
   /// A back reference to the `IncomingSocketHandler` processing the socket that
   /// this `IncomingDataProcessor` is processing.
   public weak var handler: SocketHandler?
@@ -55,7 +55,7 @@ public class VimSocketProcessor: IncomingSocketProcessor {
   ///                    and needs to be processed.
   ///
   /// - Returns: true if the data was processed, false if it needs to be processed later.
-  public func process(_ buffer: NSData) -> Bool {
+  public func process(_ buffer: Data) -> Bool {
     let result: Bool
 
     switch self.state {
@@ -97,8 +97,8 @@ public class VimSocketProcessor: IncomingSocketProcessor {
   }
 
   /// Parses the data from the incoming request
-  private func parse(_ data: NSData) {
-    let parseStatus = self.request.parse(data)
+  private func parse(_ data: Data) {
+    let parseStatus = self.request.parse(data as NSData)
 
     // Log and bail if we got an error. No use throwing here.
     guard parseStatus.error == nil else {

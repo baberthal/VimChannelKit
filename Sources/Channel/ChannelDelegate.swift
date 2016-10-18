@@ -17,4 +17,10 @@ public protocol ChannelDelegate: class {
   /// - parameter incoming: The IncomingMessage class instance for this request
   /// - parameter outgoing: The OutgoingMessage class instance for this request
   func handle(incoming: ChannelRequest, outgoing: ChannelResponse)
+
+  /// The channel received a request.
+  ///
+  /// - parameter channel: The channel that received the reqest (sender).
+  /// - parameter message: The message that was received by the channel.
+  func channel(_ channel: Channel, didReceiveMessage message: ChannelRequest)
 }

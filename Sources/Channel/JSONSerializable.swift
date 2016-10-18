@@ -6,13 +6,13 @@
 //
 //
 
-import Yajl
+import SwiftyJSON
 import Foundation
 
 /// A type that can be represented as JSON
 public protocol JSONSerializable {
   /// A JSON-compatible representation of the conforming type
-  var json: JSONRepresentable { get }
+  var json: JSON { get }
   
   /// The raw JSON string of the message body.
   ///
@@ -32,7 +32,7 @@ public protocol JSONInitializable: JSONSerializable {
   /// Required initializer from a JSON Object
   ///
   /// - parameter json: The json object containing the message data
-  init?(json: JSONRepresentable)
+  init?(json: JSON)
 }
 
 /// Default implementations

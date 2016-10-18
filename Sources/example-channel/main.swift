@@ -7,32 +7,23 @@
 //
 
 import Foundation
-import SocketServer
+import Channel
 import LoggerAPI
-import Yajl
+import SwiftyJSON
 
 class Handler: ChannelDelegate {
-  func handle(incoming: ChannelRequest, outgoing: ChannelResponse) {
-    let incomingBody: JSON
+  /// The channel received a request.
+  ///
+  /// - parameter channel: The channel that received the reqest (sender).
+  /// - parameter message: The message that was received by the channel.
+  public func channel(_ channel: Channel, didReceiveMessage message: ChannelRequest) {
+  }
 
-    do {
-      incomingBody = try incoming.readJSON()
-    } catch let error {
-      Log.error("Invalid JSON Object. -- \(error)")
-      return
-    }
-    
-    Log.verbose("Got incoming message: \(incomingBody)")
-
-    if incomingBody.stringValue == "hello!" {
-      Log.verbose("Writing outgoing message: \"got it!\"")
-      do {
-        try outgoing.write(from: "got it!")
-        try outgoing.end()
-      } catch let error {
-        Log.error("error writing to socket: \(error)")
-      }
-    }
+  /// Handle a new incoming request to the server
+  ///
+  /// - parameter incoming: The IncomingMessage class instance for this request
+  /// - parameter outgoing: The OutgoingMessage class instance for this request
+  public func handle(incoming: ChannelRequest, outgoing: ChannelResponse) {
   }
 }
 

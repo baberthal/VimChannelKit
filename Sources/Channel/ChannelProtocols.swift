@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Yajl
+import SwiftyJSON
 
 // MARK: - ChannelReceivable
 
@@ -38,7 +38,7 @@ public protocol ChannelReceivable: class {
   ///
   /// - Throws: Socket.error if an error occurred while reading from the socket
   /// - Returns: A JSON object
-  func readJSON() throws -> JSONRepresentable
+  func readJSON() throws -> JSON
 
   /// Read all of the data in the body of the request
   ///
@@ -71,7 +71,7 @@ public protocol ChannelSendable: class {
   ///
   /// - parameter json: The JSON struct that contains the data to be added.
   /// - throws: Socket.error if an error occurred while writing to the socket
-  func write(from json: JSONRepresentable) throws
+  func write(from json: JSON) throws
 
   /// Complete sending the HTTP response
   ///

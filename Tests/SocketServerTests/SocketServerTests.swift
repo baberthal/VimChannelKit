@@ -1,5 +1,5 @@
 import XCTest
-@testable import SocketServer
+@testable import Channel
 
 class SocketServerTests: XCTestCase {
   func testExample() {

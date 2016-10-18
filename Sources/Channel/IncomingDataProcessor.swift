@@ -19,11 +19,11 @@ import Foundation
 /// This protocol defines the API of the classes used to process the data that
 /// comes in from a client's request. There should be one `IncomingDataProcessor`
 /// instance per incoming request.
-public protocol IncomingSocketProcessor: class {
+public protocol IncomingDataProcessor: class {
   /// A flag to indicate that the socket has a request in progress
   var inProgress: Bool { get set }
   
-  /// A back reference to the `SocketHandler` processing the socket that
+  /// A back reference to the `Connection` processing the socket that
   /// this `IncomingDataProcessor` is processing.
   weak var handler: SocketHandler? { get set }
   
@@ -33,12 +33,12 @@ public protocol IncomingSocketProcessor: class {
   ///                    and needs to be processed.
   ///
   /// - Returns: true if the data was processed, false if it needs to be processed later.
-  func process(_ buffer: NSData) -> Bool
+  func process(_ buffer: Data) -> Bool
   
   /// Write data to the socket
   ///
   /// - Parameter from: An NSData object containing the bytes to be written to the socket.
-  func write(from data: NSData)
+  func write(from data: Data)
   
   /// Write a sequence of bytes in an array to the socket
   ///

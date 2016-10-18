@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import SocketServer
+@testable import Channel
 
 class MessageTests: XCTestCase {
   var request: VimMessage!

@@ -28,13 +28,6 @@ PKG_CONFIG = /usr/local/bin/pkg-config
 ####################
 #   DEPENDENCIES   #
 ####################
-PACKAGE_INCLUDE_DIRS := $(shell echo Packages/Yajl-*)/Sources/YajlConfig/include
-
-cflags += $(shell $(PKG_CONFIG) yajl --cflags)/.. -I$(PACKAGE_INCLUDE_DIRS)
-ldflags += $(shell $(PKG_CONFIG) yajl --libs)
-YAJL_INC = $(shell $(PKG_CONFIG) yajl --cflags-only-I)/..
-swiftcflags += $(patsubst -I%,-I %,$(YAJL_INC))
-
 
 ####################################
 #  Build Config (debug | release)  #
@@ -103,7 +96,7 @@ test:
 	$(SWIFT_TEST) $(SPM_FLAGS)
 
 run: build-$(BUILD_CONFIG)
-	.build/$(BUILD_CONFIG)/simple-socket-server
+	.build/$(BUILD_CONFIG)/example-channel
 
 clean:
 	$(RM_R) *.o *.dylib *.a ./.build ./.dist ./docs

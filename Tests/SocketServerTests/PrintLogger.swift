@@ -22,4 +22,7 @@ public class PrintLogger: Logger {
     Log.logger = PrintLogger()
     setbuf(stdout, nil)
   }
+
+  required public init(_ level: LogLevel) {}
+  init() {}
 }
