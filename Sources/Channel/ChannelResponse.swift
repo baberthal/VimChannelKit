@@ -18,13 +18,25 @@ public class ChannelResponse: ChannelSendable {
   private static let bufferSize = 4096
 
   /// Buffer for the response
-  private var buffer: NSMutableData
+  private var buffer: Data
 
   /// Corresponding socket processor
-  private weak var processor: VimSocketProcessor?
+  private weak var processor: MessageProcessor?
+
+  /// The outgoing message instance
+  private var message = Message()
 
   /// ID of the message we are responding to
-  public var id: Int!
+  public var id: Int {
+    get { return message.id }
+    set { message.id = newValue }
+  }
+
+  /// The body of our message
+  public var body: JSON {
+    get { return message.body }
+    set { message.body = newValue }
+  }
 
   // MARK: - Initializers
 
@@ -32,9 +44,9 @@ public class ChannelResponse: ChannelSendable {
   ///
   /// - parameter processor: The corresponding VimSocketProcessor
   /// - parameter respondingTo: The request we are responding to
-  init(processor: VimSocketProcessor) {
+  init(processor: MessageProcessor) {
     self.processor = processor
-    self.buffer = NSMutableData(capacity: ChannelResponse.bufferSize) ?? NSMutableData()
+    self.buffer = Data(capacity: ChannelResponse.bufferSize)
   }
 
   // MARK: - Public Methods 
@@ -54,14 +66,13 @@ public class ChannelResponse: ChannelSendable {
   public func write(from data: Data) throws {
     guard let processor = self.processor else { return }
 
-    if buffer.length + data.count > ChannelResponse.bufferSize && buffer.length != 0 {
+    if buffer.count + data.count > ChannelResponse.bufferSize && buffer.count != 0 {
       processor.write(from: buffer)
-      buffer.length = 0
+      buffer.count = 0
     }
 
     if data.count > ChannelResponse.bufferSize {
-      let dataToWrite = NSData(data: data)
-      processor.write(from: dataToWrite)
+      processor.write(from: data)
     } else {
       buffer.append(data)
     }
@@ -84,14 +95,25 @@ public class ChannelResponse: ChannelSendable {
   public func end() throws {
     guard let processor = self.processor else { return }
 
-    if buffer.length > 0 {
+    if buffer.count > 0 {
       processor.write(from: buffer)
     }
   }
 
   /// Reset this response object back to it's initial state
   public func reset() {
-    self.buffer.length = 0
+    self.buffer.count = 0
+    self.message = Message()
+  }
+
+  /// Configure the response as a response to another message
+  public func shouldRespondTo(message: Message) {
+    self.message.id = message.id
+  }
+
+  /// Configure the response as a response to a `ChannelRequest`
+  public func shouldRespondTo(request: ChannelRequest) {
+    shouldRespondTo(message: request.message)
   }
 
   // MARK: - Private Methods
@@ -108,15 +130,17 @@ public class ChannelResponse: ChannelSendable {
       return
     }
 
-    if buffer.length + utf8.count > ChannelResponse.bufferSize && buffer.length != 0 {
+    if buffer.count + utf8.count > ChannelResponse.bufferSize && buffer.count != 0 {
         processor.write(from: buffer)
-        buffer.length = 0
+        buffer.count = 0
     }
 
     if utf8.count > ChannelResponse.bufferSize {
       processor.write(from: utf8, length: utf8len)
     } else {
-      buffer.append(UnsafePointer(utf8), length: utf8len)
+      utf8.withUnsafeBufferPointer { bufferPointer in
+        buffer.append(bufferPointer)
+      }
     }
   }
 }

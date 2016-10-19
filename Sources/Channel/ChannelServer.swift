@@ -12,12 +12,15 @@ import Dispatch
 import LoggerAPI
 
 /// A channel server for Vim
-public class ChannelServer {
+public class ChannelServer: ChannelBackend {
   /// ServerDelegate that will handle the request-response cycle
   public weak var delegate: ChannelDelegate?
 
+  /// The channel we are serving
+  public internal(set) weak var channel: Channel!
+
   /// Port the server listens on
-  public private(set) var port: Int?
+  public internal(set) var port: Int?
 
   /// The socket we are listening on
   private var listenSocket: Socket? = nil
@@ -26,7 +29,7 @@ public class ChannelServer {
   internal var listening = false
 
   /// Incoming socket handler
-  private let socketManager = SocketManager()
+  private let connectionManager = ConnectionManager()
 
   /// Maximum number of pending connections
   private let maxPendingConnections = 100
@@ -34,12 +37,27 @@ public class ChannelServer {
   /// Create a channel server
   ///
   /// - parameter port: The port for the server to listen on
-  public init(port: Int) {
+  public convenience init(port: Int, serving channel: Channel) {
+    self.init(serving: channel)
     self.port = port
+  }
+
+  init(serving channel: Channel) {
+    self.channel = channel
+    self.delegate = channel.delegate
   }
 
   /// Default initializer
   public init() { }
+
+  /// Start the server
+  public func start() {
+    guard let port = self.port else { return }
+
+    self.listen(port: port, errorHandler: { error in
+      Log.error("An error occured: \(error)")
+    })
+  }
 
   /// Listen for connections on a socket.
   ///
@@ -103,7 +121,9 @@ public class ChannelServer {
   /// - parameter socket: The socket on which the request was made
   func handleClientRequest(socket clientSocket: Socket) {
     guard let delegate = self.delegate else { return }
-    socketManager.handle(socket: clientSocket, using: delegate)
+    connectionManager.addConnection(forChannel: self.channel,
+                                    on: clientSocket,
+                                    using: delegate)
   }
 
   /// Send a vim command to the vim instance
@@ -119,20 +139,5 @@ public class ChannelServer {
       self.listening = false
       listenSocket.close()
     }
-  }
-
-  /// Class method to create a new Server and have it listen for connections.
-  ///
-  /// - parameter port: port number for accepting new connections
-  /// - parameter delegate: the delegate handler for connections
-  /// - parameter onError: optional callback for error handling
-  /// - returns: a new server instance
-  public class func listen(port: Int,
-                           delegate: ChannelDelegate,
-                           onError: ((Swift.Error) -> ())? = nil) -> ChannelServer  {
-    let server = Vim.createChannel()
-    server.delegate = delegate
-    server.listen(port: port, errorHandler: onError)
-    return server
   }
 }

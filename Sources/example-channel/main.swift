@@ -16,7 +16,15 @@ class Handler: ChannelDelegate {
   ///
   /// - parameter channel: The channel that received the reqest (sender).
   /// - parameter message: The message that was received by the channel.
-  public func channel(_ channel: Channel, didReceiveMessage message: ChannelRequest) {
+  func channel(_ channel: Channel, didReceiveMessage message: Message) {
+    Log.info("Channel: \(channel) didReceiveMessage: \(message)")
+  }
+
+  func channel(
+    _ channel: Channel, shouldRespondTo message: Message, with response: inout Message
+    ) -> Bool {
+    Log.info("Channel: \(channel) shouldRespondTo: \(message), with: \(message)")
+    return false
   }
 
   /// Handle a new incoming request to the server
@@ -24,24 +32,33 @@ class Handler: ChannelDelegate {
   /// - parameter incoming: The IncomingMessage class instance for this request
   /// - parameter outgoing: The OutgoingMessage class instance for this request
   public func handle(incoming: ChannelRequest, outgoing: ChannelResponse) {
+    Log.info("handle incoming: \(incoming), outgoing: \(outgoing)")
   }
 }
 
-let port = 1337
 
 let logger = TTYLogger(.verbose)
 logger.colored = true
 
 Log.logger = logger
 
-Log.verbose("Swift Echo Server Example")
-let prettyPort = "\(port)".colorize(.magenta)
-Log.verbose("Connect with a terminal window by entering `telnet 127.0.0.1 \(prettyPort)`")
-
 let handler = Handler()
 
-let server = ChannelServer.listen(port: port, delegate: handler, onError: {
-  Log.error("Error: \($0)")
-})
+let channel = Channel.stdStreamChannel(delegate: handler)
 
-dispatchMain()
+Log.verbose("Swift Vim Channel Example -- Std. Streams")
+
+channel.run()
+
+//
+//let port = 1337
+//
+//
+//let prettyPort = "\(port)".colorize(.magenta)
+//Log.verbose("Connect with a terminal window by entering `telnet 127.0.0.1 \(prettyPort)`")
+//
+////let server = ChannelServer.listen(port: port, delegate: handler, onError: {
+////  Log.error("Error: \($0)")
+////})
+////
+////dispatchMain()

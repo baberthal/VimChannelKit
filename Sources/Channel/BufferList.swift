@@ -45,6 +45,14 @@ public class BufferList {
   public var data: Data {
     return Data(bytes: localData.bytes, count: localData.length)
   }
+
+  /// Get a `DispatchData` representation of the BufferList
+  public var dispatchData: DispatchData {
+    let uint8Bytes = localData.bytes.assumingMemoryBound(to: UInt8.self)
+    let bufferPointer = UnsafeBufferPointer(start: uint8Bytes, count: localData.length)
+
+    return DispatchData(bytes: bufferPointer)
+  }
   
   /// Initializes a BufferList instance
   ///
@@ -122,6 +130,21 @@ public class BufferList {
     
     return result
   }
+
+
+  /// Fill an NSMutableData with data from the buffer
+  ///
+  /// - parameter data: The DispatchData object to fill from data in the buffer
+  /// - returns: The number of bytes actually copied from the buffer. It will be equal
+  ///   to the number of bytes left in the buffer.
+  public func fill(data: inout DispatchData) -> Int {
+    let result = localData.length - byteIndex
+    data.append(localData.bytes.assumingMemoryBound(to: UInt8.self) + byteIndex, count: result)
+    byteIndex += result
+    
+    return result
+  }
+
 
   /// Resets the buffer to zero length and the beginning position
   public func reset() {

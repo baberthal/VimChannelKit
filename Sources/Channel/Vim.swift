@@ -30,14 +30,14 @@ public final class Vim {
     queue.async(group: Vim.group, execute: block)
   }
 
-  /// Create a new ChannelServer
+  /// Create a channel of a given type, using a delegate
   ///
-  /// - parameter port: The port for the server to listen on
-  /// - returns: a new ChannelServer
-  public static func createChannel(port: Int? = nil) -> ChannelServer {
-    if let port = port {
-      return ChannelServer(port: port)
-    }
-    return ChannelServer()
+  /// - parameter type: The type (`ChannelType`) of channel to create
+  public static func createChannel(type: ChannelType) -> Channel {
+    return Channel(type: type)
+  }
+
+  public static func createSocketChannel(port: Int) -> Channel {
+    return Channel.socketChannel(port: port)
   }
 }

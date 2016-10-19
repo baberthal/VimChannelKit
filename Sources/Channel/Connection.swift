@@ -19,6 +19,10 @@ public class Connection {
   /// Dispatch queue for writing to sockets
   static let socketWriteQueue = DispatchQueue(label: "vim-channel.socket-writer")
 
+  /// Minimum number of bytes to process before invoking the handler.
+  /// We set it to the length of the string "[]", because each message must be a JSON array
+  static private let lowWaterMark = "[]".lengthOfBytes(using: .utf8)
+
   /// Dispatch queues for reading from sockets
   static let socketReadQueues = [
     DispatchQueue(label: "vim-channel.socket-reader.A"),
@@ -28,16 +32,9 @@ public class Connection {
   // MARK: - Public Properties 
 
   /// The associated DataProcessor
-  public var processor: IncomingDataProcessor?
+  public var processor: DataProcessor?
 
   // MARK: - Internal Properties
-
-  /// Dispatch source for socket reading
-  /// - note: This property is optional. Use the appropriate initializer to enable it.
-  var readSource: DispatchSourceRead!
-
-  /// Dispatch source for socket writing
-  var writeSource: DispatchSourceWrite?
 
   /// The associated socket
   let socket: Socket
@@ -47,6 +44,12 @@ public class Connection {
 
   /// The file descriptor of our socket
   var fileDescriptor: Int32 { return socket.socketfd }
+
+  /// Dispatch read source for socket ops
+  var readSource: DispatchSourceRead!
+
+  /// Dispatch write source for socket ops
+  var writeSource: DispatchSourceWrite?
 
   // MARK: - Private Properties 
   
@@ -65,56 +68,51 @@ public class Connection {
   /// This is `true` if we are preparing to close the connection
   private var preparingToClose = false
 
+  /// A shortcut for `socketReadQueue(fd: socket.socketfd)`
+  private var socketReadQueue: DispatchQueue {
+    return socketReadQueue(fd: socket.socketfd)
+  }
+
   // MARK: - Initializers 
 
   /// Initialize a connection with a Socket, managed by a `ConnectionManager`
-  init(socket: Socket, using: IncomingDataProcessor, managedBy manager: ConnectionManager) {
+  init(socket: Socket, using: DataProcessor, managedBy manager: ConnectionManager) {
     self.socket = socket
     self.processor = using
     self.manager = manager
 
-    let q = socketReadQueue(fd: socket.socketfd)
+    self.readSource = DispatchSource.makeReadSource(fileDescriptor: socket.socketfd,
+                                                    queue: socketReadQueue)
 
-    self.readSource = DispatchSource.makeReadSource(fileDescriptor: socket.socketfd, queue: q)
     self.readSource.setEventHandler(handler: { _ = self.handleRead() })
     self.readSource.setCancelHandler(handler: self.handleCancel)
     self.readSource.resume()
+
+    self.processor?.connection = self
   }
 
   // MARK: - Public Methods
+
+  func write(buffer: UnsafeBufferPointer<UInt8>) {
+    guard socket.socketfd > -1 else { return }
+
+    do {
+      try writeImpl(buffer: buffer)
+    } catch {
+      Log.error("Write to socket (fd=\(self.socket.socketfd) failed. " +
+                "Error number=\(errno) Message=\(errorString(errno)).")
+    }
+  }
 
   /// Write a sequence of bytes in an array to the socket
   ///
   /// - parameter from: An UnsafeRawPointer to the sequence of bytes to be written to the socket.
   /// - parameter length: The number of bytes to write to the socket.
+  
   public func write(from bytes: UnsafeRawPointer, length: Int) {
-    func writeInternal() throws {
-      let written: Int
-
-      if writeBuffer.count == 0 {
-        written = try socket.write(from: bytes, bufSize: length)
-      } else {
-        written = 0
-      }
-
-      guard written == length else { return }
-
-      Connection.socketWriteQueue.sync { [unowned self] in
-        self.writeBuffer.append(bytes.advanced(by: written).assumingMemoryBound(to: UInt8.self),
-                                count: length - written)
-      }
-
-      if self.writeSource == nil { self.createWriteSource() }
-    }
-
-    guard socket.socketfd > -1 else { return }
-
-    do {
-      try writeInternal()
-    } catch {
-      Log.error("Write to socket (fd=\(self.socket.socketfd) failed. " +
-                "Error number=\(errno) Message=\(errorString(error: errno)).")
-    }
+    let bytePointer = bytes.assumingMemoryBound(to: UInt8.self)
+    let buffer = UnsafeBufferPointer(start: bytePointer, count: length)
+    write(buffer: buffer)
   }
 
   /// Write as much data to the socket as possible, buffering the rest
@@ -145,8 +143,10 @@ public class Connection {
   }
 
   // MARK: - Internal Methods 
-  
-  /// The event handler for our dispatch read source
+
+  /// Read available data from the socket, into `readBuffer`
+  ///
+  /// - returns: true if the data was processed, false otherwise
   func handleRead() -> Bool {
     var result = true
 
@@ -162,30 +162,16 @@ public class Connection {
       } else if socket.remoteConnectionClosed {
         close()
       }
+
     } catch let error as Socket.Error {
-      Log.error(error.description)
+      Log.error(socketError: error)
       close()
     } catch {
-      Log.error("Unexpected error! -- \(error)")
+      Log.error("Unknown error: \(error)")
       close()
     }
-    
+
     return result
-  }
-
-  /// Helper for handling buffered reads
-  func handleBufferedReadImpl() -> Bool {
-    if readBuffer.count > 0 {
-      return handleRead()
-    } else {
-      return true
-    }
-  }
-
-  func handleBufferedRead() {
-    socketReadQueue(fd: socket.socketfd).sync { [unowned self] in
-      _ = self.handleBufferedReadImpl()
-    }
   }
 
   // MARK: - Private Methods 
@@ -220,7 +206,7 @@ public class Connection {
         }
       } catch {
         Log.error("Write to socket (file descriptor \(socket.socketfd) failed. " +
-                  "Error number=\(errno). Message=\(errorString(error: errno)).")
+                  "Error number=\(errno). Message=\(errorString(errno)).")
       }
 
       if let writeSource = writeSource, writeBuffer.count == 0 {
@@ -233,6 +219,22 @@ public class Connection {
     }
 
     if preparingToClose { doClose() }
+  }
+
+  /// The actual write implementation
+  private func writeImpl(buffer: UnsafeBufferPointer<UInt8>) throws {
+    let written: Int = try {
+      guard writeBuffer.count > 0 else { return 0 }
+      return try socket.write(from: buffer.baseAddress!, bufSize: buffer.count)
+    }()
+
+    guard written != buffer.count else { return }
+
+    Connection.socketWriteQueue.sync { [unowned self] in
+      self.writeBuffer.append(buffer)
+    }
+
+    if writeSource == nil { self.createWriteSource() }
   }
 
   /// Create a dispatch write source
@@ -269,6 +271,11 @@ public class Connection {
     readSource.cancel()
   }
 
+  /// The cleanup handler for our dispatch IO
+  private func cleanupIO(_ fd: Int32) {
+
+  }
+
   /// The cancel handler for our dispatch read source
   private func handleCancel() {
     if socket.socketfd > -1 {
@@ -278,6 +285,6 @@ public class Connection {
 }
 
 /// - Returns: String containing relevant text about the error.
-fileprivate func errorString(error: Int32) -> String {
+fileprivate func errorString(_ error: Int32) -> String {
   return String(validatingUTF8: strerror(error)) ?? "Error: \(error)"
 }

@@ -61,7 +61,7 @@ SPM_FLAGS = $(SPM_CFLAGS) $(SPM_LDFLAGS) $(SPM_SWIFTCFLAGS)
 ################################
 #  Additional Flags for Xcode  #
 ################################
-XCODEPROJ_CFLAGS  =
+XCODEPROJ_CFLAGS  = -Xcc '-I$$(SRCROOT)/Sources/RingBuffer/include'
 XCODEPROJ_LDFLAGS = -Xlinker '-framework CoreFoundation'
 XCODEPROJ_FLAGS   = $(XCODEPROJ_CFLAGS) $(XCODEPROJ_LDFLAGS)
 

@@ -22,12 +22,18 @@ public class ChannelRequest: ChannelReceivable {
   // MARK: - Public 
 
   /// The `id` of the incoming or outgoing message
-  public internal(set) var id: Int = 0
+  public internal(set) var id: Int {
+    get { return message.id }
+    set { message.id = newValue }
+  }
 
   /// The IP address of our remote host
   public var remoteAddress: String {
     return clientSocket.prettyHost
   }
+
+  /// The associated message with this request
+  public internal(set) var message = Message()
 
   // MARK: - Private
 
@@ -42,9 +48,6 @@ public class ChannelRequest: ChannelReceivable {
 
   /// Buffer for parsing
   private var buffer = Data(capacity: ChannelRequest.bufferSize)
-
-  /// helper for YajlParserDelegate
-  fileprivate var hasSeenArray = false
 
   // MARK: - Initializers
   
@@ -62,8 +65,8 @@ public class ChannelRequest: ChannelReceivable {
   /// - throws: Socket.Error if an error occured while reading the socket
   /// - returns: True if everything was successful
   @discardableResult
-  func parse(_ buffer: NSData) -> MessageParserStatus {
-    let length = buffer.length
+  func parse(_ buffer: Data) -> MessageParserStatus {
+    let length = buffer.count
 
     guard length > 0 else {
       status.error = .unexpectedEOF
@@ -73,6 +76,17 @@ public class ChannelRequest: ChannelReceivable {
     if status.state == .reset {
       reset()
     }
+
+    let error: NSErrorPointer = nil
+    let json = JSON(data: buffer, options: [.allowFragments], error: error)
+
+    guard error == nil else {
+      status.error = .invalidJSON
+      return status
+    }
+
+    self.message.update(from: json)
+    status.state = .messageComplete
 
     return status
   }
@@ -139,7 +153,7 @@ public class ChannelRequest: ChannelReceivable {
     let len = try read(into: &buffer)
 
     if len > 0 {
-      let json = JSON(data: buffer)
+      let json = JSON(data: buffer, options: [.allowFragments])
       return json
     }
 
