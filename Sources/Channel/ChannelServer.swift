@@ -59,6 +59,9 @@ public class ChannelServer: ChannelBackend {
     })
   }
 
+  public func write(from buffer: UnsafeBufferPointer<UInt8>) {
+  }
+  
   /// Listen for connections on a socket.
   ///
   /// - parameter port: port number for new connections (eg. 8090)

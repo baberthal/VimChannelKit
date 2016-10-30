@@ -12,16 +12,23 @@
 /// The delegate's handle function is invoked when new requests arrive at the
 /// server for processing.
 public protocol ChannelDelegate: class {
-  /// Handle a new incoming request to the server
-  ///
-  /// - parameter incoming: The IncomingMessage class instance for this request
-  /// - parameter outgoing: The OutgoingMessage class instance for this request
-  func handle(incoming: ChannelRequest, outgoing: ChannelResponse)
-
   /// The channel received a request.
+  ///
+  /// To respond to a message, atopters of this protocol should do the following:
+  ///
+  /// ````
+  /// func channel(_ channel: Channel, didReceiveMessage message: Message) {
+  ///     // your logic here...
+  ///     let response: JSON = ... // create the response
+  ///     channel.respondTo(message: message, with: response)
+  /// }
+  ///
+  /// ````
   ///
   /// - parameter channel: The channel that received the reqest (sender).
   /// - parameter message: The message that was received by the channel.
+  ///
+  /// - seealso: `Channel.respondTo(message:with:)`
   func channel(_ channel: Channel, didReceiveMessage message: Message)
 
   /// The channel received a request. To respond to the request, return true from this

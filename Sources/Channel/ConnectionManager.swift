@@ -22,14 +22,12 @@ class ConnectionManager {
   /// - parameter socket: the incoming socket to add the connection on
   /// - parameter using: the ChannelDelegate to handle the connection 
   func addConnection(
-    forChannel channel: Channel, on socket: Socket, using delegate: ChannelDelegate)
-  {
+    forChannel channel: Channel, on socket: Socket, using delegate: ChannelDelegate
+    ) {
     do {
       try socket.setBlocking(mode: false)
 
-      let processor  = MessageProcessor(socket: socket,
-                                        channel: channel,
-                                        using: delegate)
+      let processor  = MessageProcessor(channel: channel, using: delegate)
       
       let connection = Connection(socket: socket, using: processor, managedBy: self)
 

@@ -9,6 +9,7 @@
 import Dispatch
 import Foundation
 import LoggerAPI
+import Socket
 
 // MARK: - ChannelStream 
 
@@ -16,6 +17,12 @@ public class ChannelStream: ChannelBackend {
   /// The `low-water` mark for our input channel. All received messages should
   /// be a vaild JSON array, so we look for a string at least as long as `"[]"`.
   public static let ioLowWater = "[]".lengthOfBytes(using: .utf8)
+
+  /// Dispatch queue for writing to our output stream
+  static let writeQueue = DispatchQueue(label: "vim-channel.channel-stream-writer")
+
+  /// Dispatch queues for reading from sockets
+  static let readQueue = DispatchQueue(label: "vim-channel.channel-stream-reader")
 
   // MARK: - Properties 
 
@@ -25,6 +32,9 @@ public class ChannelStream: ChannelBackend {
   /// A back reference to the channel we are serving
   public weak var channel: Channel!
 
+  /// The associated data processor
+  public var processor: MessageProcessor
+
   /// The input DispatchIO stream for communication
   private var inputStream: DispatchIO!
 
@@ -32,31 +42,37 @@ public class ChannelStream: ChannelBackend {
   private var outputStream: DispatchIO!
 
   /// A buffer for input
-  private var inputBuffer = BufferList()
+  private var inputBuffer: DispatchData!
 
   // MARK: - Initializers
 
-  /// Create a ChannelStream serving a given `Channel`.
+  /// Internal designated initializer
+  init(_ channel: Channel) {
+    self.channel   = channel
+    self.delegate  = channel.delegate
+    self.processor = MessageProcessor(channel: channel, using: channel.delegate!)
+  }
+
+  /// Create a ChannelStream serving a given `Channel` over `stdin` and `stdout`.
   ///
   /// - parameter channel: The channel we are serving.
-  public init(serving channel: Channel) {
-    self.channel = channel
-    self.delegate = channel.delegate
+  public convenience init(serving channel: Channel) {
+    self.init(channel)
 
-    self.inputStream = DispatchIO(type: .stream,
-                                  fileDescriptor: STDIN_FILENO,
-                                  queue: DispatchQueue.global(),
-                                  cleanupHandler: self.cleanupHandler)
-
-    self.outputStream = DispatchIO(type: .stream,
-                                   fileDescriptor: STDIN_FILENO,
-                                   queue: DispatchQueue.global(),
-                                   cleanupHandler: self.cleanupHandler)
-
-    self.inputStream.setLimit(lowWater: ChannelStream.ioLowWater)
-
-    self.outputStream.setLimit(lowWater: ChannelStream.ioLowWater)
+    self.inputStream  = createDispatchIO(for: STDIN_FILENO,  cleanupHandler: self.cleanupHandler)
+    self.outputStream = createDispatchIO(for: STDOUT_FILENO, cleanupHandler: self.cleanupHandler)
   }
+
+  /// Create a ChannelStream with a given `Socket`.
+  ///
+  /// - parameter channel: The channel we are serving.
+  /// - parameter socket: The socket we are serving.
+  public convenience init(serving channel: Channel, overSocket socket: Socket) {
+    self.init(channel)
+    self.inputStream  = createDispatchIO(for: socket.socketfd, cleanupHandler: self.cleanupHandler)
+    self.outputStream = self.inputStream
+  }
+  
 
   // MARK: - Public Methods
 
@@ -75,7 +91,17 @@ public class ChannelStream: ChannelBackend {
     }
   }
 
+  /// Write a sequence of bytes in an UnsafeBufferPointer to the channel
+  ///
+  /// - parameter from: An UnsafeBufferPointer to the sequence of bytes to be written
+  /// - parameter count: The number of bytes to write
+  public func write(from buffer: UnsafeBufferPointer<UInt8>) {
+    let data = DispatchData(bytes: buffer)
+    self.write(data: data)
+  }
+
   func write(data: DispatchData) {
+    // TODO: Add a handler for progress
     self.outputStream.write(offset: 0,
                             data: data,
                             queue: DispatchQueue.global(),
@@ -86,34 +112,44 @@ public class ChannelStream: ChannelBackend {
 
   /// Handle io reads from stdin
   private func ioReadHandler(done: Bool, data: DispatchData?, errorCode: Int32) {
-    guard errorCode == 0 else {
-      Log.error("Error occured: (\(errorCode))")
+    guard let data = data, errorCode == 0 else {
+      Log.error("Error occured: (\(errorCode))", if: errorCode != 0)
       prepareShutdown()
       return
     }
 
-    guard let data = data, data.count > 0 else {
-      Log.error("Data was nil (or empty)!")
-      return
+    if self.inputBuffer == nil {
+      self.inputBuffer = data
+    } else {
+      self.inputBuffer.append(data)
     }
 
-    if done && self.inputBuffer.count == 0 {
-      write(data: data)
-      return
+    if let last = data.last, last == 0x000A /* utf8 for `\n` */ {
+      finish()
     }
 
-    data.withUnsafeBytes(body: { (bytes: UnsafePointer<UInt8>) in
-      self.inputBuffer.append(bytes: bytes, length: data.count)
-    })
-
-    if done { finish() }
+    if done && data.count == 0 { /// we got EOF
+      finish()
+      prepareShutdown()
+    }
   }
 
   /// Finish reading a request
   func finish() {
     guard self.inputBuffer.count > 0 else { return }
-    let dispatchData = self.inputBuffer.dispatchData
-    write(data: dispatchData)
+
+    let data: Data = self.inputBuffer.withUnsafeBytes(body: {
+      (bytes: UnsafePointer<UInt8>) in
+        return Data(bytes: bytes, count: self.inputBuffer.count)
+    })
+
+    let processed = self.processor.process(data)
+
+    if processed {
+      self.inputBuffer = nil
+    } else {
+      Log.error("Unable to process data.")
+    }
   }
 
   /// Cleanup handler for our `inputChannel`
@@ -127,4 +163,14 @@ public class ChannelStream: ChannelBackend {
   private func prepareShutdown() {
     Log.info("Shutting down the channel")
   }
+}
+
+
+/// Helper to create DispatchIO objects for a given fd
+fileprivate func createDispatchIO(
+  for fd: Int32, cleanupHandler: @escaping (Int32) -> ()) -> DispatchIO {
+    let io =  DispatchIO(type: .stream, fileDescriptor: fd, queue: DispatchQueue.global(),
+                         cleanupHandler: cleanupHandler)
+    io.setLimit(lowWater: ChannelStream.ioLowWater)
+    return io
 }

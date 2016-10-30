@@ -26,14 +26,6 @@ class Handler: ChannelDelegate {
     Log.info("Channel: \(channel) shouldRespondTo: \(message), with: \(message)")
     return false
   }
-
-  /// Handle a new incoming request to the server
-  ///
-  /// - parameter incoming: The IncomingMessage class instance for this request
-  /// - parameter outgoing: The OutgoingMessage class instance for this request
-  public func handle(incoming: ChannelRequest, outgoing: ChannelResponse) {
-    Log.info("handle incoming: \(incoming), outgoing: \(outgoing)")
-  }
 }
 
 

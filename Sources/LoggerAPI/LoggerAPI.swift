@@ -181,7 +181,7 @@ public class Log {
   /// Log a debuging message.
   ///
   /// - parameter msg: The message to be logged
-  /// - parameter file: The file of the source code of the function invoking the logger API. 
+  /// - parameter file: The file of the source code of the function invoking the logger API.
   ///                   Defaults to the file of the actual function invoking this function.
   /// - parameter function: The name of the function invoking the logger API.
   ///                       Defaults to the actual name of the function invoking this function.

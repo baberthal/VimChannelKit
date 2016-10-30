@@ -65,7 +65,7 @@ extension Message: JSONInitializable {
 
 extension Message: CustomStringConvertible {
   public var description: String {
-    return "[\(id), \(body.rawString)]"
+    return "[\(id), \(body.rawString() ?? "")]"
   }
 }
 

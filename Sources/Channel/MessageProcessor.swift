@@ -13,6 +13,11 @@ import Socket
 import SwiftyJSON
 
 public class MessageProcessor: DataProcessor {
+  /// Default buffer size used for creating data buffers
+  static let bufferSize = 2048
+
+  // MARK: - Public Properties
+  
   /// A back reference to the `Connection` processing the socket that
   /// this `DataProcessor` is processing.
   public weak var connection: Connection?
@@ -23,14 +28,13 @@ public class MessageProcessor: DataProcessor {
   /// The `Channel` that the request came in on
   public weak var channel: Channel!
 
-  /// The incoming request we are working with
-  private let request: ChannelRequest
-
-  /// An optional response to the request
-  private var response: ChannelResponse!
-
   /// A flag that indicates that there is a request in progress
   public var inProgress = true
+
+  // MARK: - Private Properties
+  
+  /// The incoming request we are working with
+  private var request = Message()
 
   /// An internal enum for state
   enum State {
@@ -43,14 +47,11 @@ public class MessageProcessor: DataProcessor {
   /// Create a new `MessageProcessor`, communicating on `socket`, using `delegate`
   /// to handle the message.
   ///
-  /// - parameter socket: The socket on which communications will take place
   /// - parameter channel: The channel the connection is taking place on
   /// - parameter using: The delegate to handle messages after processing
-  public init(socket: Socket, channel: Channel, using delegate: ChannelDelegate) {
+  public init(channel: Channel, using delegate: ChannelDelegate) {
     self.delegate = delegate
     self.channel = channel
-    self.request = ChannelRequest(socket: socket)
-    self.response = ChannelResponse(processor: self)
   }
 
   // MARK: - DataProcessor methods
@@ -96,38 +97,65 @@ public class MessageProcessor: DataProcessor {
   // MARK: - Private Helper Methods
 
   private func parse(_ buffer: Data) {
-    let parseStatus = self.request.parse(buffer)
+    func parseInternal() throws -> JSON {
+      let length = buffer.count
 
-    guard parseStatus.error == nil else {
-      Log.error("Failed to parse the incoming data: \(parseStatus.error!)")
-      return
+      guard length > 0 else {
+        throw Error.unexpectedEOF
+      }
+      
+      let errorPointer: NSErrorPointer = nil
+      let json = JSON(data: buffer, options: [.allowFragments], error: errorPointer)
+      
+      guard errorPointer == nil else {
+        throw Error.invalidJSON(errorPointer)
+      }
+
+      return json
     }
 
-    switch parseStatus.state {
-    case .initial: break
-    case .messageComplete: parseComplete()
-    case .reset: break
+    do {
+      let json = try parseInternal()
+      self.request.update(from: json)
+      parseComplete()
+    } catch let error as Error {
+      Log.error(error.description)
+    } catch {
+      Log.error("Unexpected error: \(error)")
     }
   }
 
   private func parseComplete() {
     self.state = .complete
-    response.reset()
-    response.shouldRespondTo(request: self.request)
 
     DispatchQueue.global().async { [unowned self] in
-      self.delegate?.channel(self.channel, didReceiveMessage: self.request.message)
+      self.delegate?.channel(self.channel, didReceiveMessage: self.request)
+    }
+  }
+}
 
-      var msg = Message()
-      msg.id = self.request.id
 
-      guard let shouldRespond = self.delegate?.channel(self.channel,
-                                                       shouldRespondTo: self.request.message,
-                                                       with: &msg) else { return }
+extension MessageProcessor {
+  /// An error that occurs while processing the message
+  public enum Error: Swift.Error {
+    /// Unexpectedly got EOF
+    case unexpectedEOF
+    /// A JSON object was invalid
+    case invalidJSON(NSErrorPointer)
+    /// An internal error occured
+    case `internal`
+  }
+}
 
-      if shouldRespond {
-        self.response.body = msg.body
-      }
+extension MessageProcessor.Error: CustomStringConvertible {
+  public var description: String {
+    switch self {
+    case .unexpectedEOF:
+      return "Unexpectedly got EOF while reading the request."
+    case .invalidJSON(let e):
+      return "Invalid json object. -- \(e!.pointee!.description)"
+    case .internal:
+      return "An internal error occured."
     }
   }
 }

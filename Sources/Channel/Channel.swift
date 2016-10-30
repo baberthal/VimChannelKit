@@ -7,6 +7,8 @@
 //
 
 import Dispatch
+import SwiftyJSON
+import struct Foundation.Data
 
 // MARK: - Channel 
 
@@ -80,6 +82,14 @@ public class Channel {
   public func run() -> Never {
     start()
     dispatchMain()
+  }
+
+
+  /// Send a response to a message
+  ///
+  /// - parameter message: the message the `Channel` should respond to
+  /// - parameter body: The body of the response message
+  public func respondTo(message: Message, with body: JSON) {
   }
 }
 
@@ -156,4 +166,47 @@ public protocol ChannelBackend: class {
 
   /// Stop the backend
   func stop()
+
+  /// Write a sequence of bytes to the channel
+  /// 
+  /// The default implementation simply forwards to `write(from:)`
+  ///
+  /// - parameter from: An UnsafePointer<UInt8> that contains the bytes to be written
+  /// - parameter count: The number of bytes to write
+  func write(from bytes: UnsafePointer<UInt8>, count: Int)
+
+  /// Write a sequence of bytes in an UnsafeBufferPointer to the channel
+  ///
+  /// - parameter from: An UnsafeBufferPointer to the sequence of bytes to be written
+  /// - parameter count: The number of bytes to write
+  func write(from buffer: UnsafeBufferPointer<UInt8>)
+  
+  /// Write as much data to the socket as possible, buffering the rest
+  /// 
+  /// The default implementation simply forwards to `write(from:)`
+  ///
+  /// - parameter data: The Data struct containing the bytes to write
+  func write(from data: Data)
+}
+
+// MARK: - Default Implementations
+
+extension ChannelBackend {
+  /// Write a sequence of bytes to the channel
+  ///
+  /// - parameter from: An UnsafePointer<UInt8> that contains the bytes to be written
+  /// - parameter count: The number of bytes to write
+  public func write(from bytes: UnsafePointer<UInt8>, count: Int) {
+    let bufferPointer = UnsafeBufferPointer(start: bytes, count: count)
+    self.write(from: bufferPointer)
+  }
+
+  /// Write as much data to the socket as possible, buffering the rest
+  ///
+  /// - parameter data: The Data struct containing the bytes to write
+  public func write(from data: Data) {
+    data.withUnsafeBytes { bytes in
+      self.write(from: bytes, count: data.count)
+    }
+  }
 }
