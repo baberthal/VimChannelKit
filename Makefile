@@ -24,6 +24,7 @@ RM_R := $(RM) -r
 JAZZY = /Users/morgan/.rvm/gems/ruby-2.3.1@global/bin/jazzy
 OPEN = /usr/bin/open
 PKG_CONFIG = /usr/local/bin/pkg-config
+SWIFT_LINT = /usr/local/bin/swiftlint
 
 ####################
 #   DEPENDENCIES   #
@@ -65,11 +66,17 @@ XCODEPROJ_CFLAGS  = -Xcc '-I$$(SRCROOT)/Sources/RingBuffer/include'
 XCODEPROJ_LDFLAGS = -Xlinker '-framework CoreFoundation'
 XCODEPROJ_FLAGS   = $(XCODEPROJ_CFLAGS) $(XCODEPROJ_LDFLAGS)
 
+###########################
+#  Documentation Targets  #
+###########################
+DOC_TARGETS = $(addprefix docs-,LoggerAPI Channel)
+
 ################################################################################
 #                                   TARGETS                                    #
 ################################################################################
 .PHONY: all build build-debug build-release test clean \
-  distclean fetch update-deps xcodeproj docs read-docs clean-xcode \
+  distclean fetch update-deps xcodeproj docs docs-socket docs-loggerapi \
+  docs-channel read-docs clean-xcode \
   regenerate-xcode release run
 
 all: build
@@ -83,8 +90,13 @@ print-%: ; @echo $*=$($*)
 docs/index.html: $(PROJECT_NAME).xcodeproj
 	$(JAZZY)
 
-docs: $(PROJECT_NAME).xcodeproj
-	$(JAZZY)
+docs: $(DOC_TARGETS)
+	$(RM_R) build
+
+$(DOC_TARGETS): $(PROJECT_NAME).xcodeproj
+	$(JAZZY) --module $(subst docs-,,$@) \
+	  --xcodebuild-arguments -target,$(subst docs-,,$@) \
+	  --output docs/$(subst docs-,,$@)
 
 read-docs: docs/index.html
 	$(OPEN) ./docs/index.html
@@ -99,7 +111,7 @@ run: build-$(BUILD_CONFIG)
 	.build/$(BUILD_CONFIG)/example-channel
 
 clean:
-	$(RM_R) *.o *.dylib *.a ./.build ./.dist ./docs
+	$(RM_R) *.o *.dylib *.a ./{,.}build ./.dist ./docs
 
 clean-xcode:
 	$(RM_R) $(PROJECT_NAME).xcodeproj
@@ -122,5 +134,17 @@ xcopen: $(PROJECT_NAME).xcodeproj
 
 xcreopen: regenerate-xcode xcopen
 
-$(PROJECT_NAME).xcodeproj: | fetch
+$(PROJECT_NAME).xcodeproj: Packages
 	$(SWIFT_PKG) generate-xcodeproj $(SPM_FLAGS) $(XCODEPROJ_FLAGS)
+
+Packages:
+	$(SWIFT_PKG) fetch
+
+lint:
+	$(SWIFT_LINT)
+
+lint-autocorrect:
+	$(SWIFT_LINT) autocorrect
+
+lint-list-rules:
+	$(SWIFT_LINT) rules

@@ -4,11 +4,8 @@ github_url: https://github.com/baberthal/ChannelKit
 theme: fullwidth
 clean: true
 min_acl: internal
-docset_path: ChannelKit.docset
 
 readme: README.md
 
 skip_undocumented: false
 hide_documentation_coverage: false
-
-xcodebuild_arguments: [-scheme, VimChannelKit]

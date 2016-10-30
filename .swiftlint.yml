@@ -1,10 +1,16 @@
-opt_in_rules:
-  - missing_docs
-
 included:
   - Sources
-  - Tests
 
 excluded:
   - Packages
   - .build
+
+variable_name:
+  min_length: 2
+
+type_name:
+  min_length: 2
+
+function_parameter_count:
+  warning: 6
+  error: 10
