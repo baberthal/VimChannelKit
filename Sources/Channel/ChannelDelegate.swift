@@ -36,7 +36,7 @@ public protocol ChannelDelegate: class {
   ///
   /// - parameter channel: The channel on which the request was received
   /// - parameter message: The message that was received by the channel
-  /// - parameter response: An optional response to the message. 
+  /// - parameter response: An optional response to the message.
   ///             This will be ignored if this method returns `false`.
   /// - returns: `true` if the response should be sent, `false` otherwise.
   func channel(_ channel: Channel, shouldRespondTo message: Message,

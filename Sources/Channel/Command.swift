@@ -11,7 +11,7 @@ import SwiftyJSON
 
 /// With a JSON channel the process can send commands to Vim that will be
 /// handled by Vim internally, it does not require a handler for the channel.
-/// 
+///
 /// Possible commands are:
 ///
 ///   - `redraw`: redraw the screen
@@ -28,7 +28,7 @@ import SwiftyJSON
 /// ````
 /// ["ex","if mode() == 'i' | call feedkeys('ClassName') | endif"]
 /// ````
-/// 
+///
 /// Errors in these commands are normally not reported to avoid them messing up
 /// the display.  If you do want to see them, set the 'verbose' option to 3 or
 /// higher.
@@ -98,7 +98,7 @@ public final class VimCommand {
   }
 
   /// The "normal" command is executed like with ":normal!", commands are not
-  /// mapped.  
+  /// mapped.
   ///
   /// Example to open the folds under the cursor:
   /// ````
@@ -252,7 +252,7 @@ public final class VimCommand {
   }
 
   /// Create an ex command.
-  /// 
+  ///
   /// - parameter command: The command to execute.
   /// - returns: an `Ex` command.
   public static func ex(_ command: String) -> Ex {
@@ -260,7 +260,7 @@ public final class VimCommand {
   }
 
   /// Create a normal-mode command.
-  /// 
+  ///
   /// - parameter command: The command to execute.
   /// - returns: a `Normal`-mode command.
   public static func normal(_ command: String) -> Normal {
@@ -268,7 +268,7 @@ public final class VimCommand {
   }
 
   /// Create an expression command.
-  /// 
+  ///
   /// - parameter expression: The expression to evaluate.
   /// - parameter id: An optional id. If this is set, Vim will send a response.
   /// - returns: an `Expr` command.
@@ -277,7 +277,7 @@ public final class VimCommand {
   }
 
   /// Create an function call command.
-  /// 
+  ///
   /// - parameter function: The name of the function to call.
   /// - parameter args: A json-compatible array with arguments to the function.
   /// - parameter id: An optional id. If this is set, Vim will send a response.

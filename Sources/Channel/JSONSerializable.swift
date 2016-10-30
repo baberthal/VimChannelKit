@@ -13,7 +13,7 @@ import Foundation
 public protocol JSONSerializable {
   /// A JSON-compatible representation of the conforming type
   var json: JSON { get }
-  
+
   /// The raw JSON string of the message body.
   ///
   /// - parameter using: The encoding to use when creating the string

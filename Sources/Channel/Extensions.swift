@@ -7,11 +7,26 @@
 //
 
 import Socket
+import Dispatch
 
 extension Socket {
   /// Returns a 'pretty' version of the remoteHostname:remotePort pair
   public var prettyHost: String {
     return "\(remoteHostname):\(remotePort)"
+  }
+
+  /// Writes data to the socket from a `DispatchData` instance
+  ///
+  /// - parameter data: The `DispatchData` instance containing the data to write to the socket
+  /// - returns: The number of bytes written to the socket
+  @discardableResult
+  public func write(from data: DispatchData) throws -> Int {
+    // don't do anything if the data is empty, just fail silently
+    guard data.count > 0 else { return 0 }
+
+    return try data.withUnsafeBytes(body: { (pointer: UnsafePointer<UInt8>) in
+      return try write(from: pointer, bufSize: data.count)
+    })
   }
 }
 

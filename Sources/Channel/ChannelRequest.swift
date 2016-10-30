@@ -19,7 +19,7 @@ public class ChannelRequest: ChannelReceivable {
   /// Default buffer size used for creating a BufferList.
   static let bufferSize = 2048
 
-  // MARK: - Public 
+  // MARK: - Public
 
   /// The `id` of the incoming or outgoing message
   public internal(set) var id: Int {
@@ -50,7 +50,7 @@ public class ChannelRequest: ChannelReceivable {
   private var buffer = Data(capacity: ChannelRequest.bufferSize)
 
   // MARK: - Initializers
-  
+
   /// Default initializer.
   ///
   /// - parameter type: The type (`MessageType`) of message we are handling.
@@ -157,7 +157,7 @@ public class ChannelRequest: ChannelReceivable {
       return json
     }
 
-    return nil
+    return JSON.null
   }
 
   // MARK: - Private Functions

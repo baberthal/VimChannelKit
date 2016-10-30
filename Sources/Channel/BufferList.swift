@@ -16,7 +16,7 @@
 
 import Foundation
 
-// MARK: BufferList 
+// MARK: BufferList
 
 /// This class provides an implementation of a buffer that can be added to and
 /// "taken" from in chunks. Data is always added to the end of the buffer and
@@ -25,22 +25,22 @@ import Foundation
 /// pointer can be reset, to enable the data in the buffer to be fetched from the
 /// beginning again.
 public class BufferList {
-  
-  // MARK: -- Private 
-  
+
+  // MARK: - Private
+
   /// Internal storage buffer
   private let localData = NSMutableData(capacity: 4096) ?? NSMutableData()
-  
+
   /// Byte offset inside of internal storage buffer
   private var byteIndex = 0
-  
-  // MARK: -- Public 
-  
+
+  // MARK: - Public
+
   /// Get the number of bytes stored in the BufferList
   public var count: Int {
     return localData.length
   }
-  
+
   /// Read the data in the BufferList
   public var data: Data {
     return Data(bytes: localData.bytes, count: localData.length)
@@ -53,12 +53,12 @@ public class BufferList {
 
     return DispatchData(bytes: bufferPointer)
   }
-  
+
   /// Initializes a BufferList instance
   ///
   /// - Returns: a BufferList instance
   public init() {}
-  
+
   /// Append bytes to the buffer
   ///
   /// Parameter bytes: The pointer to the bytes
@@ -66,14 +66,14 @@ public class BufferList {
   public func append(bytes: UnsafePointer<UInt8>, length: Int) {
     localData.append(bytes, length: length)
   }
-  
-  /// Append data into BufferList 
-  /// 
+
+  /// Append data into BufferList
+  ///
   /// Parameter data: The data to append
   public func append(data: Data) {
     localData.append(data)
   }
-  
+
   /// Fill an array with data from the buffer
   ///
   /// - Parameter array: a [UInt8] for the data you want from the buffer
@@ -84,7 +84,7 @@ public class BufferList {
   public func fill(array: inout [UInt8]) -> Int {
     return fill(buffer: UnsafeMutablePointer(mutating: array), length: array.count)
   }
-  
+
   /// Fill memory with data from the buffer
   ///
   /// - Parameter buffer: NSMutablePointer to the beginning of the memory to be filled
@@ -99,10 +99,10 @@ public class BufferList {
 
     UnsafeMutableRawPointer(buffer).copyBytes(from: bytes, count: result)
     byteIndex += result
-    
+
     return result
   }
-  
+
   /// Fill a Data struct with data from the buffer
   ///
   /// - Parameter data: The Data struct to fill from data in the buffer
@@ -113,7 +113,7 @@ public class BufferList {
     let result = localData.length - byteIndex
     data.append(localData.bytes.assumingMemoryBound(to: UInt8.self) + byteIndex, count: result)
     byteIndex += result
-    
+
     return result
   }
 
@@ -127,7 +127,7 @@ public class BufferList {
     let result = localData.length - byteIndex
     data.append(localData.bytes.assumingMemoryBound(to: UInt8.self) + byteIndex, length: result)
     byteIndex += result
-    
+
     return result
   }
 
@@ -141,7 +141,7 @@ public class BufferList {
     let result = localData.length - byteIndex
     data.append(localData.bytes.assumingMemoryBound(to: UInt8.self) + byteIndex, count: result)
     byteIndex += result
-    
+
     return result
   }
 

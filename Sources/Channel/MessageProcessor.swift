@@ -17,7 +17,7 @@ public class MessageProcessor: DataProcessor {
   static let bufferSize = 2048
 
   // MARK: - Public Properties
-  
+
   /// A back reference to the `Connection` processing the socket that
   /// this `DataProcessor` is processing.
   public weak var connection: Connection?
@@ -32,7 +32,7 @@ public class MessageProcessor: DataProcessor {
   public var inProgress = true
 
   // MARK: - Private Properties
-  
+
   /// The incoming request we are working with
   private var request = Message()
 
@@ -103,10 +103,10 @@ public class MessageProcessor: DataProcessor {
       guard length > 0 else {
         throw Error.unexpectedEOF
       }
-      
+
       let errorPointer: NSErrorPointer = nil
       let json = JSON(data: buffer, options: [.allowFragments], error: errorPointer)
-      
+
       guard errorPointer == nil else {
         throw Error.invalidJSON(errorPointer)
       }

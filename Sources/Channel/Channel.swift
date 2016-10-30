@@ -10,15 +10,17 @@ import Dispatch
 import SwiftyJSON
 import struct Foundation.Data
 
-// MARK: - Channel 
+// MARK: - Channel
 
+/// Represents a VimChannel, used to communicate with a running Vim instance, 
+/// either via `stdio` streams, or a socket connection.
 public class Channel {
   // MARK: - Public Properties
-  
+
   /// The backend for our channel
   public internal(set) var backend: ChannelBackend!
 
-  /// This channel's delegate 
+  /// This channel's delegate
   public weak var delegate: ChannelDelegate?
 
   /// The type of channel. (`.socket` or `.stream`)
@@ -38,7 +40,7 @@ public class Channel {
     }
   }
 
-  // MARK: - Private Properties 
+  // MARK: - Private Properties
 
   /// The server, if we are `.socket`.
   private var server: ChannelServer? {
@@ -77,7 +79,7 @@ public class Channel {
 
   /// Run the channel indefinitely. This function never returns,
   /// so make sure everything is set up before calling it.
-  /// 
+  ///
   /// - precondition: If the channel is type `.socket`, the port must have been set.
   public func run() -> Never {
     start()
@@ -152,7 +154,7 @@ extension Channel {
 
 // MARK: - ChannelBackend Protocol
 
-/// The `ChannelBackend` protocol defines an interface such that the `Channel` class can 
+/// The `ChannelBackend` protocol defines an interface such that the `Channel` class can
 /// perform channel operations in an agnostic way.
 public protocol ChannelBackend: class {
   /// A reference to the `Channel` this `ChannelBackend` belongs to
@@ -168,7 +170,7 @@ public protocol ChannelBackend: class {
   func stop()
 
   /// Write a sequence of bytes to the channel
-  /// 
+  ///
   /// The default implementation simply forwards to `write(from:)`
   ///
   /// - parameter from: An UnsafePointer<UInt8> that contains the bytes to be written
@@ -180,9 +182,9 @@ public protocol ChannelBackend: class {
   /// - parameter from: An UnsafeBufferPointer to the sequence of bytes to be written
   /// - parameter count: The number of bytes to write
   func write(from buffer: UnsafeBufferPointer<UInt8>)
-  
+
   /// Write as much data to the socket as possible, buffering the rest
-  /// 
+  ///
   /// The default implementation simply forwards to `write(from:)`
   ///
   /// - parameter data: The Data struct containing the bytes to write

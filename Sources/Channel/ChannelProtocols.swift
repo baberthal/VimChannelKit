@@ -11,7 +11,7 @@ import SwiftyJSON
 
 // MARK: - ChannelReceivable
 
-/// The `ChannelReceivable` protocol defines an interface for objects that can 
+/// The `ChannelReceivable` protocol defines an interface for objects that can
 /// be received over a Vim channel.
 public protocol ChannelReceivable: class {
   /// The IP address of the client
@@ -50,7 +50,7 @@ public protocol ChannelReceivable: class {
 }
 
 
-// MARK: - ChannelSendable 
+// MARK: - ChannelSendable
 
 /// The `ChannelSendable` protocol defines an interface for objects that can
 /// be sent to a Vim session, over a Channel

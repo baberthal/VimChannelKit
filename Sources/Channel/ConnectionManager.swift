@@ -13,14 +13,14 @@ import Socket
 
 /// The `ConnectionManager` class is responsible for managing all incoming sockets.
 class ConnectionManager {
-  /// A mapping of socket file descriptors to their associated `Connection`s 
+  /// A mapping of socket file descriptors to their associated `Connection`s
   private var connections = [Int32: Connection]()
 
   /// Add a connection on an incoming socket
   ///
   /// - parameter channel: The `Channel` associated with the connection
   /// - parameter socket: the incoming socket to add the connection on
-  /// - parameter using: the ChannelDelegate to handle the connection 
+  /// - parameter using: the ChannelDelegate to handle the connection
   func addConnection(
     forChannel channel: Channel, on socket: Socket, using delegate: ChannelDelegate
     ) {
@@ -28,7 +28,7 @@ class ConnectionManager {
       try socket.setBlocking(mode: false)
 
       let processor  = MessageProcessor(channel: channel, using: delegate)
-      
+
       let connection = Connection(socket: socket, using: processor, managedBy: self)
 
       connections[socket.socketfd] = connection

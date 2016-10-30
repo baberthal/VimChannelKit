@@ -61,7 +61,7 @@ public class ChannelServer: ChannelBackend {
 
   public func write(from buffer: UnsafeBufferPointer<UInt8>) {
   }
-  
+
   /// Listen for connections on a socket.
   ///
   /// - parameter port: port number for new connections (eg. 8090)
@@ -133,9 +133,9 @@ public class ChannelServer: ChannelBackend {
   ///
   /// - parameter cmd: The command to send
   public func sendCommand(_ cmd: VimCommand) throws {
-    
+
   }
-  
+
   /// Stop listening for new connections
   public func stop() {
     if let listenSocket = self.listenSocket {

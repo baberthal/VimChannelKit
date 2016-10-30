@@ -11,7 +11,7 @@ import Foundation
 import Socket
 import LoggerAPI
 
-/// The `ConnectionHandler` class is responsible for handling incoming data, and 
+/// The `ConnectionHandler` class is responsible for handling incoming data, and
 /// passing it to the current `DataProcessor`.
 public class Connection {
   // MARK: - Static Properties
@@ -29,7 +29,7 @@ public class Connection {
     DispatchQueue(label: "vim-channel.socket-reader.B")
   ]
 
-  // MARK: - Public Properties 
+  // MARK: - Public Properties
 
   /// The associated DataProcessor
   public var processor: DataProcessor?
@@ -51,8 +51,8 @@ public class Connection {
   /// Dispatch write source for socket ops
   var writeSource: DispatchSourceWrite?
 
-  // MARK: - Private Properties 
-  
+  // MARK: - Private Properties
+
   /// Number of socket read queues
   private let socketReadQueueCount = Connection.socketReadQueues.count
 
@@ -73,7 +73,7 @@ public class Connection {
     return socketReadQueue(fd: socket.socketfd)
   }
 
-  // MARK: - Initializers 
+  // MARK: - Initializers
 
   /// Initialize a connection with a Socket, managed by a `ConnectionManager`
   init(socket: Socket, using: DataProcessor, managedBy manager: ConnectionManager) {
@@ -93,6 +93,9 @@ public class Connection {
 
   // MARK: - Public Methods
 
+  /// Write a sequence of bytes in an UnsafeBufferPointer to the socket
+  ///
+  /// - parameter from: An UnsafeBufferPointer to the sequence of bytes to be written to the socket.
   func write(buffer: UnsafeBufferPointer<UInt8>) {
     guard socket.socketfd > -1 else { return }
 
@@ -108,7 +111,6 @@ public class Connection {
   ///
   /// - parameter from: An UnsafeRawPointer to the sequence of bytes to be written to the socket.
   /// - parameter length: The number of bytes to write to the socket.
-  
   public func write(from bytes: UnsafeRawPointer, length: Int) {
     let bytePointer = bytes.assumingMemoryBound(to: UInt8.self)
     let buffer = UnsafeBufferPointer(start: bytePointer, count: length)
@@ -142,7 +144,7 @@ public class Connection {
     }
   }
 
-  // MARK: - Internal Methods 
+  // MARK: - Internal Methods
 
   /// Read available data from the socket, into `readBuffer`
   ///
@@ -174,7 +176,7 @@ public class Connection {
     return result
   }
 
-  // MARK: - Private Methods 
+  // MARK: - Private Methods
 
   /// Handle write to the socket
   private func handleWrite() {
@@ -183,7 +185,7 @@ public class Connection {
       Log.error("Amount of bytes to write to file descriptor \(socket.socketfd) was " +
                 "negative \(amount)")
     }
-    
+
     func handleWriteInternal() {
       do {
         let amountToWrite = writeBuffer.count - writeBufferPosition
@@ -265,7 +267,7 @@ public class Connection {
     return processed
   }
 
-  /// Close the socket and mark this handler as no longer in progress.
+  /// Close the socket and MARK this handler as no longer in progress.
   /// - note: The cancel handler will actually close the socket
   private func doClose() {
     readSource.cancel()

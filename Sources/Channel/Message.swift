@@ -13,7 +13,7 @@ import SwiftyJSON
 
 /// Represents a message to or from Vim, sent over a channel.
 public struct Message {
-  /// ID of the message. 
+  /// ID of the message.
   /// If this is a positive number, it came from Vim.
   /// If this is a negative number, the message originated from the server.
   public var id: Int = 0
@@ -36,7 +36,7 @@ extension Message: JSONInitializable {
   }
 
   init() {
-    self.body = nil
+    self.body = JSON.null
   }
 
   public var json: JSON {

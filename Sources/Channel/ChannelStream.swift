@@ -11,10 +11,10 @@ import Foundation
 import LoggerAPI
 import Socket
 
-// MARK: - ChannelStream 
+// MARK: - ChannelStream
 
 public class ChannelStream: ChannelBackend {
-  /// The `low-water` mark for our input channel. All received messages should
+  /// The `low-water` MARK for our input channel. All received messages should
   /// be a vaild JSON array, so we look for a string at least as long as `"[]"`.
   public static let ioLowWater = "[]".lengthOfBytes(using: .utf8)
 
@@ -24,7 +24,7 @@ public class ChannelStream: ChannelBackend {
   /// Dispatch queues for reading from sockets
   static let readQueue = DispatchQueue(label: "vim-channel.channel-stream-reader")
 
-  // MARK: - Properties 
+  // MARK: - Properties
 
   /// Channel delegate that will handle the request-response cycle
   public weak var delegate: ChannelDelegate?
@@ -59,7 +59,7 @@ public class ChannelStream: ChannelBackend {
   public convenience init(serving channel: Channel) {
     self.init(channel)
 
-    self.inputStream  = createDispatchIO(for: STDIN_FILENO,  cleanupHandler: self.cleanupHandler)
+    self.inputStream  = createDispatchIO(for: STDIN_FILENO, cleanupHandler: self.cleanupHandler)
     self.outputStream = createDispatchIO(for: STDOUT_FILENO, cleanupHandler: self.cleanupHandler)
   }
 
@@ -72,7 +72,7 @@ public class ChannelStream: ChannelBackend {
     self.inputStream  = createDispatchIO(for: socket.socketfd, cleanupHandler: self.cleanupHandler)
     self.outputStream = self.inputStream
   }
-  
+
 
   // MARK: - Public Methods
 
@@ -101,11 +101,10 @@ public class ChannelStream: ChannelBackend {
   }
 
   func write(data: DispatchData) {
-    // TODO: Add a handler for progress
     self.outputStream.write(offset: 0,
                             data: data,
                             queue: DispatchQueue.global(),
-                            ioHandler: {_,_,_ in })
+                            ioHandler: {_, _, _ in })
   }
 
   // MARK: - Private Methods

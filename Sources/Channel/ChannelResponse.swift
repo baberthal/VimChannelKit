@@ -49,8 +49,8 @@ public class ChannelResponse: ChannelSendable {
     self.buffer = Data(capacity: ChannelResponse.bufferSize)
   }
 
-  // MARK: - Public Methods 
-  
+  // MARK: - Public Methods
+
   /// Add a string to the body of the HTTP response.
   ///
   /// - parameter string: The String data to be added.
@@ -84,7 +84,7 @@ public class ChannelResponse: ChannelSendable {
   /// - throws: Socket.error if an error occurred while writing to the socket
   public func write(from json: JSON) throws {
     let message: JSON = [self.id, json]
-    
+
     let jsonData = try message.rawData()
     try write(from: jsonData)
   }
@@ -117,7 +117,7 @@ public class ChannelResponse: ChannelSendable {
   }
 
   // MARK: - Private Methods
-  
+
   private func writeToSocketViaBuffer(text: String) throws {
     guard let processor = self.processor else { return }
 
