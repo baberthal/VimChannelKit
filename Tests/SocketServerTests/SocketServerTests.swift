@@ -4,8 +4,8 @@ import XCTest
 class SocketServerTests: XCTestCase {
   func testExample() {
   }
-  
-  static var allTests : [(String, (SocketServerTests) -> () throws -> Void)] {
+
+  static var allTests: [(String, (SocketServerTests) -> () throws -> Void)] {
     return [
       ("testExample", testExample),
     ]

@@ -13,11 +13,11 @@ class StringColorTest: XCTestCase {
   override func setUp() {
     super.setUp()
   }
-  
+
   override func tearDown() {
     super.tearDown()
   }
-  
+
   func testColorsAreCorrect() {
     for color in String.availableColors {
       let colorName = color.rawValue

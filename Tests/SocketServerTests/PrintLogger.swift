@@ -10,7 +10,8 @@ import Foundation
 import LoggerAPI
 
 public class PrintLogger: Logger {
-  public func log(_ level: LogLevel, msg: String, file: StaticString, function: StaticString, line: UInt, async: Bool) {
+  public func log(_ level: LogLevel, msg: String, file: StaticString,
+                  function: StaticString, line: UInt, async: Bool) {
     print("\(level): \(function) \(file):\(line) -- \(msg)")
   }
 

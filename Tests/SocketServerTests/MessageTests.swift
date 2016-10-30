@@ -12,13 +12,13 @@ import XCTest
 class MessageTests: XCTestCase {
   var request: VimMessage!
   var response: VimMessage!
-  
+
   override func setUp() {
     super.setUp()
     self.request = VimMessage(1, body: "hello!")
     self.response = VimMessage(1, body: "got it!")
   }
-  
+
   override func tearDown() {
     super.tearDown()
   }
