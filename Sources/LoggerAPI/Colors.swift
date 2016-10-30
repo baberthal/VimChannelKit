@@ -59,6 +59,10 @@ public enum LogColor: String {
     }
   }
 
+  /// Return the escape sequence to set the background for the current logger
+  ///
+  /// - parameter outputType: The `OutputType` to query
+  /// - returns: The appropriate escape sequence for `OutputType` to set the background color
   public func backgroundColorFor(_ outputType: OutputType) -> String {
     switch outputType {
     case .terminal: return ttyColor.replacingOccurrences(of: "[0;3", with: "[0;4")

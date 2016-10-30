@@ -59,23 +59,17 @@ public class TTYLogger {
 extension TTYLogger: Logger {
   /// Output a logged message.
   ///
-  /// - parameter type:     The level of the message (`LogLevel`) being logged.
+  /// - parameter level:     The level of the message (`LogLevel`) being logged.
   /// - parameter msg:      The mesage to be logged
   /// - parameter function: The name of the function invoking the logger API.
   /// - parameter line:     The line in the source code of the function invoking the logger API.
   /// - parameter file:     The file of the source code of the function invoking the logger API.
-  public func log(_ level: LogLevel, msg: String, file: StaticString, function: StaticString, line: UInt, async: Bool) {
-    let color: LogColor
+  public func log(_ level: LogLevel, msg: String, file: StaticString,
+                  function: StaticString, line: UInt, async: Bool) {
+    let color = colorForLevel(level)
 
-    switch level {
-    case .debug:   color = .magenta
-    case .verbose: color = .cyan
-    case .info:    color = .green
-    case .warning: color = .yellow
-    case .error:   color = .red
-    }
-
-    var message: String = self.format ?? (self.details ? TTYLogger.detailedFormat : TTYLogger.defaultFormat)
+    var message: String = self.format ?? (self.details ? TTYLogger.detailedFormat :
+                                                         TTYLogger.defaultFormat)
 
     for fmt in FormatValues.all {
       let str = fmt.rawValue
@@ -109,9 +103,20 @@ extension TTYLogger: Logger {
   public func isLogging(_ level: LogLevel) -> Bool {
     return level.rawValue >= self.level.rawValue
   }
+
+  /// - returns: The appropriate color for the given log level
+  private func colorForLevel(_ level: LogLevel) -> LogColor {
+    switch level {
+    case .debug:   return .magenta
+    case .verbose: return .cyan
+    case .info:    return .green
+    case .warning: return .yellow
+    case .error:   return .red
+    }
+  }
 }
 
-// MARK: - FormatValues 
+// MARK: - FormatValues
 
 extension TTYLogger {
   /// A set of substitutions to use when formatting a log message
@@ -134,7 +139,7 @@ extension TTYLogger {
   }
 }
 
-// MARK: - Implementation Details 
+// MARK: - Implementation Details
 
 /// Get a formatted date, given a format string
 ///

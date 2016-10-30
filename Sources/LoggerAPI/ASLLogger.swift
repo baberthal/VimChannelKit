@@ -59,7 +59,8 @@ extension ASLLogger: Logger {
   /// - parameter function: The name of the function invoking the logger API.
   /// - parameter line: The line in the source code of the function invoking the logger API.
   /// - parameter async: Whether the log should operate asynchronously
-  public func log(_ level: LogLevel, msg: String, file: StaticString, function: StaticString, line: UInt, async: Bool) {
+  public func log(_ level: LogLevel, msg: String, file: StaticString,
+                  function: StaticString, line: UInt, async: Bool) {
   }
 
   public func isLogging(_ level: LogLevel) -> Bool {

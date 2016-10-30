@@ -56,7 +56,7 @@ public protocol Logger {
   /// - returns: true if a message of the specified level (`LogLevel`) will be output.
   func isLogging(_ level: LogLevel) -> Bool
 
-  /// Create an instance of the most derived class and set it up as the logger used by the 
+  /// Create an instance of the most derived class and set it up as the logger used by the
   /// `Logger` protocol.
   /// - parameter level: The most detailed message level (`LogLevel`) to see in the output of the
   ///                    logger. Defaults to `.verbose`.
@@ -64,7 +64,7 @@ public protocol Logger {
 
   /// Create an instance of the most derived class, using the specified log level
   /// - parameter level: The most detailed message level (`LogLevel`) to see in the output of the
-  ///                    logger. 
+  ///                    logger.
   init(_ level: LogLevel)
 }
 
@@ -91,7 +91,7 @@ extension Logger {
     self.init(level)
   }
 
-  /// Create an instance of the most derived class and set it up as the logger used by the 
+  /// Create an instance of the most derived class and set it up as the logger used by the
   /// `Logger` protocol.
   /// - parameter level: The most detailed message level (`LogLevel`) to see in the output of the
   ///                    logger. Defaults to `.verbose`.
@@ -109,7 +109,7 @@ public class Log {
   /// Log a log message for use when in verbose logging mode.
   ///
   /// - parameter msg: The message to be logged
-  /// - parameter file: The file of the source code of the function invoking the logger API. 
+  /// - parameter file: The file of the source code of the function invoking the logger API.
   ///                   Defaults to the file of the actual function invoking this function.
   /// - parameter function: The name of the function invoking the logger API.
   ///                       Defaults to the actual name of the function invoking this function.
@@ -127,7 +127,7 @@ public class Log {
   /// Log an informational message.
   ///
   /// - parameter msg: The message to be logged
-  /// - parameter file: The file of the source code of the function invoking the logger API. 
+  /// - parameter file: The file of the source code of the function invoking the logger API.
   ///                   Defaults to the file of the actual function invoking this function.
   /// - parameter function: The name of the function invoking the logger API.
   ///                       Defaults to the actual name of the function invoking this function.
@@ -145,7 +145,7 @@ public class Log {
   /// Log a warning message.
   ///
   /// - parameter msg: The message to be logged
-  /// - parameter file: The file of the source code of the function invoking the logger API. 
+  /// - parameter file: The file of the source code of the function invoking the logger API.
   ///                   Defaults to the file of the actual function invoking this function.
   /// - parameter function: The name of the function invoking the logger API.
   ///                       Defaults to the actual name of the function invoking this function.
@@ -163,7 +163,7 @@ public class Log {
   /// Log an error message.
   ///
   /// - parameter msg: The message to be logged
-  /// - parameter file: The file of the source code of the function invoking the logger API. 
+  /// - parameter file: The file of the source code of the function invoking the logger API.
   ///                   Defaults to the file of the actual function invoking this function.
   /// - parameter function: The name of the function invoking the logger API.
   ///                       Defaults to the actual name of the function invoking this function.
