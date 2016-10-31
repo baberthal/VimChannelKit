@@ -6,4 +6,4 @@
 //
 //
 
-import Foundation
+public protocol Request: class {}

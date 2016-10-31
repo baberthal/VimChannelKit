@@ -14,9 +14,6 @@ public protocol Server: class {
   /// The type that will be returned from `listen(port:errorHandler:)`
   associatedtype ServerType
 
-  /// The type that will serve as this server's delegate
-  associatedtype DelegateType
-
   /// Port number that the `Server` will listen on
   var port: Int? { get }
 
@@ -24,7 +21,7 @@ public protocol Server: class {
   var state: ServerState { get }
 
   /// This server's delegate
-  var delegate: DelegateType? { get set }
+  var delegate: ServerDelegate? { get set }
 
   /// Listen for connections on a socket.
   ///
@@ -38,9 +35,9 @@ public protocol Server: class {
   /// - parameter port: port number for new connections.
   /// - parameter errorHandler: optional callback to invoke when the server encounters an error
   /// - returns: A new instance of the most derived class, that is listening on `port`
-  static func listen(port: Int,
-                     delegate: DelegateType,
-                     errorHandler: ServerErrorHandler?) -> ServerType
+  static func listen(
+    port: Int, delegate: ServerDelegate, errorHandler: ServerErrorHandler?
+  ) -> ServerType
 
   /// Stop listening for new connections
   func stop()
