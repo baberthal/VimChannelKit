@@ -6,6 +6,8 @@
 //
 //
 
+import Socket
+
 /// An optional callback to invoke when the `Server` encounters an error
 public typealias ServerErrorHandler = (Swift.Error) -> Void
 
@@ -14,8 +16,14 @@ public protocol Server: class {
   /// The type that will be returned from `listen(port:errorHandler:)`
   associatedtype ServerType
 
+  /// The address family used by the Server
+  static var protocolFamily: Socket.ProtocolFamily { get }
+
+  /// The socket type used by the Server
+  static var socketType: Socket.SocketType { get }
+
   /// Port number that the `Server` will listen on
-  var port: Int? { get }
+  var port: Int { get }
 
   /// State of this `Server`
   var state: ServerState { get }
@@ -27,7 +35,7 @@ public protocol Server: class {
   ///
   /// - parameter port: port number for new connections.
   /// - parameter errorHandler: optional callback to invoke when the `Server` encounters an error
-  func listen(port: Int, errorHandler: ServerErrorHandler?)
+  func listen(errorHandler: ServerErrorHandler?)
 
   /// Creates a new instance of the most derived class and calls `listen(port:errorHandler:)` on 
   /// the new instance.

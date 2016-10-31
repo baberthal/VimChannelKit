@@ -6,4 +6,8 @@
 //
 //
 
-public protocol Response: class {}
+/// The `Response` protocol defines an interface for responses to requests
+/// that are received by a given server.
+public protocol Response: class {
+
+}
