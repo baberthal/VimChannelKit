@@ -9,6 +9,7 @@
 import Dispatch
 import SwiftyJSON
 import struct Foundation.Data
+import LoggerAPI
 
 // MARK: - Channel
 
@@ -92,6 +93,13 @@ public class Channel {
   /// - parameter message: the message the `Channel` should respond to
   /// - parameter body: The body of the response message
   public func respondTo(message: Message, with body: JSON) {
+    let response = Message(id: message.id, body: body)
+    do {
+      let data = try response.rawData()
+      self.backend.write(from: data)
+    } catch let error {
+      Log.error("Error: \(error)")
+    }
   }
 }
 
@@ -147,8 +155,17 @@ extension Channel {
     return channel
   }
 
-  public static func stdStreamChannel(delegate: ChannelDelegate? = nil) -> Channel {
+  /// Create a channel that communicates via `stdio` channels (`stdin` and `stdout`)
+  ///
+  /// - parameter delegate: the channel's delegate
+  /// - returns: The newly created channel
+  public static func stdioChannel(delegate: ChannelDelegate? = nil) -> Channel {
     return Channel(type: .stream, delegate: delegate)
+  }
+
+  @available(*, unavailable, renamed: "stdioChannel(delegate:)")
+  public static func stdStreamChannel(delegate: ChannelDelegate? = nil) -> Channel {
+    return stdioChannel(delegate: delegate)
   }
 }
 

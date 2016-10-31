@@ -20,6 +20,12 @@ public struct Message {
 
   /// Body of the message, as a `JSON` object.
   public var body: JSON
+
+  /// Reset the message to its initial state
+  public mutating func reset() {
+    self.id = 0
+    self.body = JSON.null
+  }
 }
 
 // MARK: - JSONInitializable

@@ -49,7 +49,7 @@ public class MessageProcessor: DataProcessor {
   ///
   /// - parameter channel: The channel the connection is taking place on
   /// - parameter using: The delegate to handle messages after processing
-  public init(channel: Channel, using delegate: ChannelDelegate) {
+  public init(channel: Channel, using delegate: ChannelDelegate!) {
     self.delegate = delegate
     self.channel = channel
   }

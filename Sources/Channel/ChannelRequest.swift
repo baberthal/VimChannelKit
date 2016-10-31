@@ -44,7 +44,7 @@ public class ChannelRequest: ChannelReceivable {
   private var status = MessageParserStatus()
 
   /// Chunk of message read in from the socket
-  fileprivate var bodyChunk = BufferList()
+  //  fileprivate var bodyChunk = BufferList()
 
   /// Buffer for parsing
   private var buffer = Data(capacity: ChannelRequest.bufferSize)

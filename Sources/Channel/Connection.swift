@@ -11,7 +11,7 @@ import Dispatch
 import Socket
 import LoggerAPI
 
-public class Connection_ {
+public class Connection {
   // MARK: - Properties
 
   /// The MessageProcessor that will process messages that are received via this connection
