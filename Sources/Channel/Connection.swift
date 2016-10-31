@@ -2,59 +2,50 @@
 //  Connection.swift
 //  VimChannelKit
 //
-//  Created by Morgan Lieberthal on 10/17/16.
+//  Created by Morgan Lieberthal on 10/30/16.
 //
 //
 
-import Dispatch
 import Foundation
+import Dispatch
 import Socket
 import LoggerAPI
 
-/// The `ConnectionHandler` class is responsible for handling incoming data, and
-/// passing it to the current `DataProcessor`.
-public class Connection {
-  // MARK: - Static Properties
+public class Connection_ {
+  // MARK: - Properties
 
-  /// Dispatch queue for writing to sockets
-  static let socketWriteQueue = DispatchQueue(label: "vim-channel.socket-writer")
+  /// The MessageProcessor that will process messages that are received via this connection
+  public private(set) var processor: MessageProcessor
 
-  /// Minimum number of bytes to process before invoking the handler.
-  /// We set it to the length of the string "[]", because each message must be a JSON array
-  static private let lowWaterMark = "[]".lengthOfBytes(using: .utf8)
+  /// The queue this connection is using
+  let readQueue: DispatchQueue
 
-  /// Dispatch queues for reading from sockets
-  static let socketReadQueues = [
-    DispatchQueue(label: "vim-channel.socket-reader.A"),
-    DispatchQueue(label: "vim-channel.socket-reader.B")
-  ]
+  /// The queue this connection is using
+  let writeQueue: DispatchQueue
 
-  // MARK: - Public Properties
-
-  /// The associated DataProcessor
-  public var processor: DataProcessor?
-
-  // MARK: - Internal Properties
-
-  /// The associated socket
+  /// The socket this connection is using
   let socket: Socket
 
-  /// A back reference to the `ConnectionManager` that manages this connection
+  /// A weak reference to the channel we are serving
+  weak var channel: Channel?
+
+  /// Weak reference to the manager that manages this connection
   weak var manager: ConnectionManager?
 
-  /// The file descriptor of our socket
+  /// The channel delegate that will handle requests
+  weak var delegate: ChannelDelegate?
+
+  /// File descriptor for the socket
   var fileDescriptor: Int32 { return socket.socketfd }
+
+  /// Same as `fileDescriptor`
+  var sockfd: Int32 { return socket.socketfd }
 
   /// Dispatch read source for socket ops
   var readSource: DispatchSourceRead!
 
   /// Dispatch write source for socket ops
   var writeSource: DispatchSourceWrite?
-
-  // MARK: - Private Properties
-
-  /// Number of socket read queues
-  private let socketReadQueueCount = Connection.socketReadQueues.count
 
   /// Buffer for socket reads
   private var readBuffer = Data()
@@ -68,30 +59,54 @@ public class Connection {
   /// This is `true` if we are preparing to close the connection
   private var preparingToClose = false
 
-  /// A shortcut for `socketReadQueue(fd: socket.socketfd)`
-  private var socketReadQueue: DispatchQueue {
-    return socketReadQueue(fd: socket.socketfd)
-  }
-
   // MARK: - Initializers
 
-  /// Initialize a connection with a Socket, managed by a `ConnectionManager`
-  init(socket: Socket, using: DataProcessor, managedBy manager: ConnectionManager) {
-    self.socket = socket
-    self.processor = using
-    self.manager = manager
+  init(socket: Socket, channel: Channel, managedBy manager: ConnectionManager) {
+    self.socket    = socket
+    self.channel   = channel
+    self.delegate  = channel.delegate
+    self.manager   = manager
+    self.processor = MessageProcessor(channel: channel, using: channel.delegate)
 
-    self.readSource = DispatchSource.makeReadSource(fileDescriptor: socket.socketfd,
-                                                    queue: socketReadQueue)
+    self.readQueue  = createQueue(forSocket: socket, type: .read)
+    self.writeQueue = createQueue(forSocket: socket, type: .write)
 
+    self.readSource = DispatchSource.makeReadSource(fileDescriptor: sockfd, queue: readQueue)
     self.readSource.setEventHandler(handler: { _ = self.handleRead() })
-    self.readSource.setCancelHandler(handler: self.handleCancel)
+    self.readSource.setCancelHandler(handler: self.handleReadCancel)
     self.readSource.resume()
-
-    self.processor?.connection = self
   }
 
-  // MARK: - Public Methods
+  // MARK: - Methods
+
+  /// Read available data from the socket, into `readBuffer`
+  ///
+  /// - returns: true if the data was processed, false otherwise
+  func handleRead() -> Bool {
+    var result = false // pessimist! 
+
+    do {
+      var len = 1
+      while len > 0 {
+        len = try socket.read(into: &readBuffer)
+      }
+
+      if readBuffer.count > 0 {
+        result = processReadData()
+      } else if socket.remoteConnectionClosed {
+        prepareShutdown()
+      }
+      
+    } catch let error as Socket.Error {
+      Log.error(error.description)
+      prepareShutdown()
+    } catch {
+      Log.error("Unexpected Error: \(error)!")
+      prepareShutdown()
+    }
+
+    return result
+  }
 
   /// Write a sequence of bytes in an UnsafeBufferPointer to the socket
   ///
@@ -102,8 +117,18 @@ public class Connection {
     do {
       try writeImpl(buffer: buffer)
     } catch {
-      Log.error("Write to socket (fd=\(self.socket.socketfd) failed. " +
-                "Error number=\(errno) Message=\(errorString(errno)).")
+      Log.error("Write to socket (fd: \(socket.socketfd)) failed -- (\(errno)) \(strerror())")
+    }
+  }
+
+  /// If there is data waiting to be written, set a flag and the socket will
+  /// be closed when all the buffered data has been written.
+  /// Otherwise, immediately close the socket.
+  public func prepareShutdown() {
+    if writeBuffer.count == writeBufferPosition {
+      prepareShutdown()
+    } else {
+      preparingToClose = true
     }
   }
 
@@ -119,13 +144,6 @@ public class Connection {
 
   /// Write as much data to the socket as possible, buffering the rest
   ///
-  /// - parameter data: The NSData object containing the bytes to write to the socket.
-  public func write(from data: NSData) {
-    write(from: data.bytes, length: data.length)
-  }
-
-  /// Write as much data to the socket as possible, buffering the rest
-  ///
   /// - parameter data: The Data object containing the bytes to write to the socket.
   public func write(from data: Data) {
     data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
@@ -133,101 +151,86 @@ public class Connection {
     }
   }
 
-  /// If there is data waiting to be written, set a flag and the socket will
-  /// be closed when all the buffered data has been written.
-  /// Otherwise, immediately close the socket.
-  public func close() {
-    if writeBuffer.count == writeBufferPosition {
-      doClose()
-    } else {
-      preparingToClose = true
-    }
-  }
-
-  // MARK: - Internal Methods
-
-  /// Read available data from the socket, into `readBuffer`
-  ///
-  /// - returns: true if the data was processed, false otherwise
-  func handleRead() -> Bool {
-    var result = true
-
-    do {
-      var len = 1
-
-      while len > 0 {
-        len = try socket.read(into: &readBuffer)
-      }
-
-      if readBuffer.count > 0 {
-        result = processRead()
-      } else if socket.remoteConnectionClosed {
-        close()
-      }
-
-    } catch let error as Socket.Error {
-      Log.error(socketError: error)
-      close()
-    } catch {
-      Log.error("Unknown error: \(error)")
-      close()
-    }
-
-    return result
-  }
-
   // MARK: - Private Methods
+
+  /// Helper for processing data once read into `readBuffer`
+  private func processReadData() -> Bool {
+    let processed = self.processor.process(self.readBuffer)
+
+    // reset `readBuffer` if the message was successfully processed
+    if processed {
+      readBuffer.count = 0
+    }
+
+    return processed
+  }
+
+  /// Cancel handler for our `DispatchReadSource`
+  private func handleReadCancel() {
+    guard socket.socketfd > -1 else { return }
+    socket.close()
+  }
 
   /// Handle write to the socket
   private func handleWrite() {
-    func logIfNegative(_ amount: Int) {
-      guard amount < 0 else { return }
-      Log.error("Amount of bytes to write to file descriptor \(socket.socketfd) was " +
-                "negative \(amount)")
-    }
-
-    func handleWriteInternal() {
+    if writeBuffer.count != 0 {
       do {
-        let amountToWrite = writeBuffer.count - writeBufferPosition
-        try writeBuffer.withUnsafeBytes { (bytes: UnsafePointer<Int8>) in
-          let written: Int
-
-          if amountToWrite > 0 {
-            written = try socket.write(from: bytes, bufSize: amountToWrite)
-          } else {
-            logIfNegative(amountToWrite)
-            written = amountToWrite
-          }
-
-          if written != amountToWrite {
-            writeBufferPosition += written
-          } else {
-            writeBuffer.count = 0
-            writeBufferPosition = 0
-          }
-        }
+        try handleWriteInternal()
       } catch {
-        Log.error("Write to socket (file descriptor \(socket.socketfd) failed. " +
-                  "Error number=\(errno). Message=\(errorString(errno)).")
+        Log.error("Write to socket (fd: \(socket.socketfd)) failed -- (\(errno)) \(strerror())")
       }
 
-      if let writeSource = writeSource, writeBuffer.count == 0 {
+      if let writeSource = self.writeSource, writeBuffer.count == 0 {
         writeSource.cancel()
       }
     }
 
-    if writeBuffer.count != 0 {
-      handleWriteInternal()
+    if preparingToClose {
+      close()
+    }
+  }
+
+  /// Helper function for reading data from the socket
+  private func handleWriteInternal() throws {
+    func logIfNegative(_ amount: Int) {
+      guard amount < 0 else { return }
+      Log.error("Amount of bytes to write to file descriptor \(sockfd) was negative: \(amount)")
     }
 
-    if preparingToClose { doClose() }
+    let amountToWrite = writeBuffer.count - writeBufferPosition
+    let written: Int
+
+    if amountToWrite > 0 {
+      try writeBuffer.withUnsafeBytes { [unowned self] (bytePointer: UnsafePointer<UInt8>) in
+        let bufStart = bytePointer + writeBufferPosition
+        written = try socket.write(from: bufStart, bufSize: amountToWrite)
+      }
+    } else {
+      logIfNegative(amountToWrite)
+      written = amountToWrite
+    }
+
+    if written != amountToWrite {
+      writeBufferPosition += written
+    } else {
+      writeBuffer.count = 0
+      writeBufferPosition = 0
+    }
+  }
+
+  /// Create a `DispatchWriteSource` for our socket
+  private func createWriteSource() {
+    self.writeSource = DispatchSource.makeWriteSource(fileDescriptor: sockfd, queue: writeQueue)
+    self.writeSource!.setEventHandler(handler: self.handleWrite)
+    self.writeSource!.setCancelHandler { self.writeSource = nil }
+    self.writeSource!.resume()
   }
 
   /// The actual write implementation
   private func writeImpl(buffer: UnsafeBufferPointer<UInt8>) throws {
     let written: Int = try {
-      guard writeBuffer.count > 0 else { return 0 }
-      return try socket.write(from: buffer.baseAddress!, bufSize: buffer.count)
+      guard let base = buffer.baseAddress, writeBuffer.count > 0 else { return 0 }
+      return try socket.write(from: base, bufSize: buffer.count)
     }()
 
     guard written != buffer.count else { return }
@@ -236,57 +239,22 @@ public class Connection {
       self.writeBuffer.append(buffer)
     }
 
-    if writeSource == nil { self.createWriteSource() }
+    if self.writeSource == nil { self.createWriteSource() }
   }
 
-  /// Create a dispatch write source
-  private func createWriteSource() {
-    writeSource = DispatchSource.makeWriteSource(fileDescriptor: socket.socketfd,
-                                                 queue: Connection.socketWriteQueue)
-    writeSource!.setEventHandler(handler: self.handleWrite)
-    writeSource!.setCancelHandler(handler: { self.writeSource = nil })
-    writeSource!.resume()
-  }
-
-  /// Return a socket read queue for a given file descriptor
-  private func socketReadQueue(fd: Int32) -> DispatchQueue {
-    let idx = Int(fd) % socketReadQueueCount
-    return Connection.socketReadQueues[idx]
-  }
-
-  /// Helper for handling reads
-  private func processRead() -> Bool {
-    guard let processor = self.processor else { return true }
-
-    let processed = processor.process(self.readBuffer)
-
-    if processed {
-      readBuffer.count = 0
-    }
-
-    return processed
-  }
-
-  /// Close the socket and MARK this handler as no longer in progress.
-  /// - note: The cancel handler will actually close the socket
-  private func doClose() {
-    readSource.cancel()
-  }
-
-  /// The cleanup handler for our dispatch IO
-  private func cleanupIO(_ fd: Int32) {
-
-  }
-
-  /// The cancel handler for our dispatch read source
-  private func handleCancel() {
-    if socket.socketfd > -1 {
-      socket.close()
-    }
+  /// Actually close the socket, and mark this handler as __`inactive`__
+  private func close() {
+    self.readSource.cancel()
   }
 }
 
-/// - Returns: String containing relevant text about the error.
-fileprivate func errorString(_ error: Int32) -> String {
-  return String(validatingUTF8: strerror(error)) ?? "Error: \(error)"
+// MARK: - Helper Functions & Implementation Details
+fileprivate enum QueueType: String {
+  case read, write
+}
+
+/// Create a `DispatchQueue` for a given Socket
+fileprivate func createQueue(forSocket socket: Socket, type: QueueType = .read) -> DispatchQueue {
+  let label = "vim-channel.connection.sockfd=\(socket.socketfd).\(type)"
+  return DispatchQueue(label: label)
 }

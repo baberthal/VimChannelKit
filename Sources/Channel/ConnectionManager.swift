@@ -16,6 +16,9 @@ class ConnectionManager {
   /// A mapping of socket file descriptors to their associated `Connection`s
   private var connections = [Int32: Connection]()
 
+  /// A Lock queue to guard access to the connection across threads
+  private let lockQueue = DispatchQueue(label: "vim-channel.connection-manager.lock-queue")
+
   /// Add a connection on an incoming socket
   ///
   /// - parameter channel: The `Channel` associated with the connection
@@ -28,15 +31,18 @@ class ConnectionManager {
       try socket.setBlocking(mode: false)
 
       let processor  = MessageProcessor(channel: channel, using: delegate)
-
       let connection = Connection(socket: socket, using: processor, managedBy: self)
 
-      connections[socket.socketfd] = connection
+      lockQueue.sync { [unowned self, socket, connection] in
+        self.connections[socket.socketfd] = connection
+      }
     } catch {
       Log.error("Failed to make incoming socket (fd=\(socket.socketfd)) non-blocking.\n" +
                 "Error code=\(errno), reason=\(errorExplanation())")
     }
   }
+
+  
 }
 
 
