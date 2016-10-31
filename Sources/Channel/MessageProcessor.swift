@@ -19,7 +19,7 @@ public class MessageProcessor: DataProcessor {
   // MARK: - Public Properties
 
   /// A back reference to the `Connection` processing the socket that
-  /// this `DataProcessor` is processing.
+  /// this `MessageProcessor` is working on
   public weak var connection: Connection?
 
   /// The `ChannelDelegate` that will handle the message post-processing
@@ -77,21 +77,30 @@ public class MessageProcessor: DataProcessor {
 
     return result
   }
-
+  
+  /// Write data to the socket
+  ///
+  /// - parameter from: An NSData object containing the bytes to be written to the socket.
   public func write(from data: Data) {
     connection?.write(from: data)
   }
 
-  public func write(from buffer: UnsafeBufferPointer<UInt8>) {
-    connection?.write(buffer: buffer)
-  }
-
+  /// Write a sequence of bytes in an array to the socket
+  ///
+  /// - parameter from: An UnsafeRawPointer to the sequence of bytes to be written to the socket.
+  /// - parameter length: The number of bytes to write to the socket.
   public func write(from bytes: UnsafeRawPointer, length: Int) {
     connection?.write(from: bytes, length: length)
   }
 
+  /// Write a sequence of bytes, from an unsafe buffer pointer to the socket
+  public func write(from buffer: UnsafeBufferPointer<UInt8>) {
+    connection?.write(buffer: buffer)
+  }
+  
+  /// Close the socket and MARK this handler as no longer in progress.
   public func close() {
-    connection?.close()
+    connection?.prepareShutdown()
   }
 
   // MARK: - Private Helper Methods
@@ -129,7 +138,10 @@ public class MessageProcessor: DataProcessor {
     self.state = .complete
 
     DispatchQueue.global().async { [unowned self] in
-      self.delegate?.channel(self.channel, didReceiveMessage: self.request)
+      if let res = self.delegate?.channel(self.channel, didReceiveMessage: self.request),
+             res != JSON.null {
+        self.channel.respondTo(message: self.request, with: res)
+      }
     }
   }
 }

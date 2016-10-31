@@ -198,12 +198,12 @@ public class Connection {
     }
 
     let amountToWrite = writeBuffer.count - writeBufferPosition
-    let written: Int
+    var written: Int
 
     if amountToWrite > 0 {
-      try writeBuffer.withUnsafeBytes { [unowned self] (bytePointer: UnsafePointer<UInt8>) in
-        let bufStart = bytePointer + writeBufferPosition
-        written = try socket.write(from: bufStart, bufSize: amountToWrite)
+      written = try writeBuffer.withUnsafeBytes { [unowned self] (bytePtr: UnsafePointer<UInt8>) in
+        let bufStart = bytePtr + self.writeBufferPosition
+        return try self.socket.write(from: bufStart, bufSize: amountToWrite)
       }
     } else {
       logIfNegative(amountToWrite)
@@ -235,7 +235,7 @@ public class Connection {
 
     guard written != buffer.count else { return }
 
-    Connection.socketWriteQueue.sync { [unowned self] in
+    writeQueue.sync { [unowned self] in
       self.writeBuffer.append(buffer)
     }
 

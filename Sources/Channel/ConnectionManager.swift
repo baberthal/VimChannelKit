@@ -29,9 +29,7 @@ class ConnectionManager {
     ) {
     do {
       try socket.setBlocking(mode: false)
-
-      let processor  = MessageProcessor(channel: channel, using: delegate)
-      let connection = Connection(socket: socket, using: processor, managedBy: self)
+      let connection = Connection(socket: socket, channel: channel, managedBy: self)
 
       lockQueue.sync { [unowned self, socket, connection] in
         self.connections[socket.socketfd] = connection
