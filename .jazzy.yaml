@@ -5,7 +5,5 @@ theme: fullwidth
 clean: true
 min_acl: internal
 
-readme: README.md
-
 skip_undocumented: false
 hide_documentation_coverage: false

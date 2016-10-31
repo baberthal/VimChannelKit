@@ -96,6 +96,7 @@ docs: $(DOC_TARGETS)
 $(DOC_TARGETS): $(PROJECT_NAME).xcodeproj
 	$(JAZZY) --module $(subst docs-,,$@) \
 	  --xcodebuild-arguments -target,$(subst docs-,,$@) \
+	  --readme Sources/$(subst docs-,,$@)/README.md \
 	  --output docs/$(subst docs-,,$@)
 
 read-docs: docs/index.html
