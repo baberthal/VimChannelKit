@@ -33,8 +33,8 @@ extension Socket {
 import LoggerAPI
 
 extension Log {
-  public static func error(_ message: String, `if` condition: Bool) {
-    guard condition else { return }
+  public static func error(_ message: String, `if` condition: @autoclosure() -> Bool) {
+    guard condition() else { return }
     Log.error(message)
   }
 

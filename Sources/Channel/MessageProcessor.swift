@@ -38,7 +38,7 @@ public class MessageProcessor: DataProcessor {
 
   /// An internal enum for state
   enum State {
-    case initial, complete
+    case reset, initial, complete
   }
 
   /// The state of our processor
@@ -66,6 +66,11 @@ public class MessageProcessor: DataProcessor {
     let result: Bool
 
     switch self.state {
+    case .reset:
+      self.request = Message()
+      state = .initial
+      fallthrough
+
     case .initial:
       inProgress = true
       parse(buffer)
@@ -140,7 +145,16 @@ public class MessageProcessor: DataProcessor {
     DispatchQueue.global().async { [unowned self] in
       if let res = self.delegate?.channel(self.channel, didReceiveMessage: self.request),
              res != JSON.null {
-        self.channel.respondTo(message: self.request, with: res)
+        let response = Message(id: self.request.id, body: res)
+
+        defer { self.state = .reset }
+
+        do {
+          let data = try response.rawData()
+          self.write(from: data)
+        } catch let error {
+          Log.error("Error: \(error)")
+        }
       }
     }
   }

@@ -74,6 +74,9 @@ public class Connection {
     self.readSource = DispatchSource.makeReadSource(fileDescriptor: sockfd, queue: readQueue)
     self.readSource.setEventHandler(handler: { _ = self.handleRead() })
     self.readSource.setCancelHandler(handler: self.handleReadCancel)
+    
+    self.processor.connection = self
+    
     self.readSource.resume()
   }
 
@@ -126,7 +129,7 @@ public class Connection {
   /// Otherwise, immediately close the socket.
   public func prepareShutdown() {
     if writeBuffer.count == writeBufferPosition {
-      prepareShutdown()
+      close()
     } else {
       preparingToClose = true
     }
@@ -249,6 +252,8 @@ public class Connection {
 }
 
 // MARK: - Helper Functions & Implementation Details
+
+/// For `createQueue(forSocket:type:)`
 fileprivate enum QueueType: String {
   case read, write
 }

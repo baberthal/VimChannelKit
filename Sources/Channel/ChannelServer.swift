@@ -13,7 +13,7 @@ import LoggerAPI
 import SimpleNet
 
 /// A channel server for Vim
-public class ChannelServer: ChannelBackend, Server {
+public class ChannelServer: ChannelBackend {
   /// ServerDelegate that will handle the request-response cycle
   public weak var delegate: ChannelDelegate?
 
@@ -30,9 +30,6 @@ public class ChannelServer: ChannelBackend, Server {
 
   /// Incoming socket handler
   private let connectionManager = ConnectionManager()
-
-  /// Lifecycle manager for this server
-  fileprivate let lifecycleManager = LifecycleManager()
 
   /// Maximum number of pending connections
   private let maxPendingConnections = 100
