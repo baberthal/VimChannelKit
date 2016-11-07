@@ -14,33 +14,28 @@ import Socket
 /// The `ConnectionManager` class is responsible for managing all incoming sockets.
 class ConnectionManager {
   /// A mapping of socket file descriptors to their associated `Connection`s
-  private var connections = [Int32: Connection]()
+  private var connections = [Int32: Channel]()
 
   /// A Lock queue to guard access to the connection across threads
   private let lockQueue = DispatchQueue(label: "vim-channel.connection-manager.lock-queue")
 
-  /// Add a connection on an incoming socket
+  /// Open a channel over a given socket.
   ///
-  /// - parameter channel: The `Channel` associated with the connection
-  /// - parameter socket: the incoming socket to add the connection on
-  /// - parameter using: the ChannelDelegate to handle the connection
-  func addConnection(
-    forChannel channel: Channel, on socket: Socket, using delegate: ChannelDelegate
-    ) {
+  /// - parameter socket: The socket over which the channel will communicate.
+  /// - parameter delegate: The delegate for the new channel.
+  func openChannel(over socket: Socket, using delegate: ChannelDelegate) {
     do {
       try socket.setBlocking(mode: false)
-      let connection = Connection(socket: socket, channel: channel, managedBy: self)
+      let newChannel = Channel(socket: socket, using: delegate, managedBy: self)
 
-      lockQueue.sync { [unowned self, socket, connection] in
-        self.connections[socket.socketfd] = connection
+      lockQueue.sync { [unowned self, socket, newChannel] in
+        self.connections[socket.socketfd] = newChannel
       }
     } catch {
       Log.error("Failed to make incoming socket (fd=\(socket.socketfd)) non-blocking.\n" +
                 "Error code=\(errno), reason=\(errorExplanation())")
     }
   }
-
-  
 }
 
 

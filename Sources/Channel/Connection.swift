@@ -5,7 +5,6 @@
 //  Created by Morgan Lieberthal on 10/30/16.
 //
 //
-
 import Foundation
 import Dispatch
 import Socket
@@ -74,8 +73,6 @@ public class Connection {
     self.readSource = DispatchSource.makeReadSource(fileDescriptor: sockfd, queue: readQueue)
     self.readSource.setEventHandler(handler: { _ = self.handleRead() })
     self.readSource.setCancelHandler(handler: self.handleReadCancel)
-    
-    self.processor.connection = self
     
     self.readSource.resume()
   }
