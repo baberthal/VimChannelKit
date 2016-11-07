@@ -10,11 +10,15 @@ import Dispatch
 import Socket
 import LoggerAPI
 
-public class Connection {
+/// A `ChannelBackend` implementation for communicating over a socket.
+public class Connection: ChannelBackend {
   // MARK: - Properties
 
+  /// A weak reference to the associated channel.
+  public internal(set) weak var channel: Channel?
+
   /// The MessageProcessor that will process messages that are received via this connection
-  public private(set) var processor: MessageProcessor
+  public private(set) var processor: MessageProcessor!
 
   /// The queue this connection is using
   let readQueue: DispatchQueue
@@ -24,9 +28,6 @@ public class Connection {
 
   /// The socket this connection is using
   let socket: Socket
-
-  /// A weak reference to the channel we are serving
-  weak var channel: Channel?
 
   /// Weak reference to the manager that manages this connection
   weak var manager: ConnectionManager?
@@ -60,15 +61,14 @@ public class Connection {
 
   // MARK: - Initializers
 
-  init(socket: Socket, channel: Channel, managedBy manager: ConnectionManager) {
-    self.socket    = socket
-    self.channel   = channel
-    self.delegate  = channel.delegate
-    self.manager   = manager
-    self.processor = MessageProcessor(channel: channel, using: channel.delegate)
-
+  init(socket: Socket, using delegate: ChannelDelegate, managedBy manager: ConnectionManager) {
     self.readQueue  = createQueue(forSocket: socket, type: .read)
     self.writeQueue = createQueue(forSocket: socket, type: .write)
+
+    self.socket    = socket
+    self.delegate  = delegate
+    self.manager   = manager
+    self.processor = MessageProcessor(backend: self, using: delegate)
 
     self.readSource = DispatchSource.makeReadSource(fileDescriptor: sockfd, queue: readQueue)
     self.readSource.setEventHandler(handler: { _ = self.handleRead() })
@@ -78,6 +78,14 @@ public class Connection {
   }
 
   // MARK: - Methods
+
+  /// Starts the channel.
+  func start() {
+  }
+
+  /// Stops the channel.
+  func stop() {
+  }
 
   /// Read available data from the socket, into `readBuffer`
   ///
@@ -94,15 +102,15 @@ public class Connection {
       if readBuffer.count > 0 {
         result = processReadData()
       } else if socket.remoteConnectionClosed {
-        prepareShutdown()
+        prepareToClose()
       }
       
     } catch let error as Socket.Error {
       Log.error(error.description)
-      prepareShutdown()
+      prepareToClose()
     } catch {
       Log.error("Unexpected Error: \(error)!")
-      prepareShutdown()
+      prepareToClose()
     }
 
     return result
@@ -111,7 +119,7 @@ public class Connection {
   /// Write a sequence of bytes in an UnsafeBufferPointer to the socket
   ///
   /// - parameter from: An UnsafeBufferPointer to the sequence of bytes to be written to the socket.
-  func write(buffer: UnsafeBufferPointer<UInt8>) {
+  func write(from buffer: UnsafeBufferPointer<UInt8>) {
     guard socket.socketfd > -1 else { return }
 
     do {
@@ -124,22 +132,23 @@ public class Connection {
   /// If there is data waiting to be written, set a flag and the socket will
   /// be closed when all the buffered data has been written.
   /// Otherwise, immediately close the socket.
-  public func prepareShutdown() {
+  public func prepareToClose() {
     if writeBuffer.count == writeBufferPosition {
       close()
     } else {
       preparingToClose = true
     }
   }
-
-  /// Write a sequence of bytes in an array to the socket
+  
+  /// Write a sequence of bytes to the channel
   ///
-  /// - parameter from: An UnsafeRawPointer to the sequence of bytes to be written to the socket.
-  /// - parameter length: The number of bytes to write to the socket.
-  public func write(from bytes: UnsafeRawPointer, length: Int) {
-    let bytePointer = bytes.assumingMemoryBound(to: UInt8.self)
-    let buffer = UnsafeBufferPointer(start: bytePointer, count: length)
-    write(buffer: buffer)
+  /// The default implementation simply forwards to `write(from:)`
+  ///
+  /// - parameter from: An UnsafePointer<UInt8> that contains the bytes to be written
+  /// - parameter count: The number of bytes to write
+  internal func write(from bytes: UnsafePointer<UInt8>, count: Int) {
+    let buffer = UnsafeBufferPointer(start: bytes, count: count)
+    write(from: buffer)
   }
 
   /// Write as much data to the socket as possible, buffering the rest
@@ -147,7 +156,7 @@ public class Connection {
   /// - parameter data: The Data object containing the bytes to write to the socket.
   public func write(from data: Data) {
     data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
-      write(from: bytes, length: data.count)
+      write(from: bytes, count: data.count)
     }
   }
 

@@ -26,8 +26,11 @@ class ConnectionManager {
   func openChannel(over socket: Socket, using delegate: ChannelDelegate) {
     do {
       try socket.setBlocking(mode: false)
-      let newChannel = Channel(socket: socket, using: delegate, managedBy: self)
 
+      let backend = Connection(socket: socket, using: delegate, managedBy: self)
+      let newChannel = Channel(backend: backend, delegate: delegate)
+      backend.channel = newChannel
+      
       lockQueue.sync { [unowned self, socket, newChannel] in
         self.connections[socket.socketfd] = newChannel
       }
