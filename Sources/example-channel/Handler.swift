@@ -11,6 +11,13 @@ import LoggerAPI
 import SwiftyJSON
 
 class Handler: ChannelDelegate {
+  /// The handler's active channel.
+  var activeChannel: Channel? = nil {
+    didSet {
+      Log.info("Added active channel: \(activeChannel)")
+    }
+  }
+
   /// The channel received a request.
   ///
   /// To respond to a message, atopters of this protocol should do the following:
@@ -47,11 +54,16 @@ class Handler: ChannelDelegate {
 
     return nil
   }
+  
+  /// The channel was opened.
+  ///
+  /// - parameter channel: The channel that was opened.
+  public func channelDidOpen(_ channel: Channel) {
+    guard self.activeChannel == nil else {
+      Log.error("This handler already has an active channel!")
+      return
+    }
 
-  func channel(
-    _ channel: Channel, shouldRespondTo message: Message, with response: inout Message
-    ) -> Bool {
-    Log.info("Channel: \(channel) shouldRespondTo: \(message), with: \(message)")
-    return false
+    self.activeChannel = channel
   }
 }

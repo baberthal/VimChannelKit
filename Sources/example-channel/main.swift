@@ -16,26 +16,15 @@ Log.logger = logger
 
 let handler = Handler()
 
-var usingSocket = false
+Log.verbose("Swift Vim Channel Example")
 
-if CommandLine.arguments.count > 1 {
-  if let theArg = CommandLine.arguments.last, theArg == "--socket" {
-    usingSocket = true
-  }
-}
+let port = 1337
+Log.verbose("Listening on port \(port)")
 
-Log.verbose("Swift Vim Channel Example -- " + (usingSocket ? "socket" : "stdio"))
+let server = Server(port: port, delegate: handler)
 
-let channel: Channel
+server.listen(errorHandler: { error in
+  Log.error("An error occured opening the socket: \(error)")
+})
 
-if usingSocket {
-  let port = 1337
-  Log.verbose("Listening on port \(port)")
-  channel = Channel.socketChannel(port: port, delegate: handler)
-} else {
-  channel = Channel.stdioChannel(delegate: handler)
-}
-
-Log.verbose("Swift Vim Channel Example -- stdio")
-
-channel.run()
+dispatchMain()
