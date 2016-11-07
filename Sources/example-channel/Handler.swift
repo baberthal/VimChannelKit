@@ -37,22 +37,19 @@ class Handler: ChannelDelegate {
   /// - returns: an optional response body to send back to the client
   ///
   /// - seealso: `Channel.respondTo(message:with:)`
-  @discardableResult
-  public func channel(_ channel: Channel, didReceiveMessage message: Message) -> JSON? {
+  public func channel(_ channel: Channel, didReceiveMessage message: Message) {
     Log.info("Channel: \(channel) didReceiveMessage: \(message)")
     
     guard let bodyString = message.body.string else {
       Log.error("Unable to get string from body of message")
-      return nil
+      return
     }
 
     debugPrint("body string: ", bodyString)
 
     if bodyString == "hello!" {
-      return "got it!"
+      channel.respondTo(message: message, with: "got it!")
     }
-
-    return nil
   }
   
   /// The channel was opened.
