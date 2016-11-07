@@ -34,4 +34,9 @@ public protocol ChannelDelegate: class {
   /// - seealso: `Channel.respondTo(message:with:)`
   @discardableResult
   func channel(_ channel: Channel, didReceiveMessage message: Message) -> JSON?
+
+  /// The channel was opened.
+  ///
+  /// - parameter channel: The channel that was opened.
+  func channelDidOpen(_ channel: Channel)
 }
