@@ -10,9 +10,7 @@ let package = Package(
     dependencies: [
         .Package(url: "https://github.com/baberthal/SwiftyJSON.git", majorVersion: 3),
         .Package(url: "https://github.com/IBM-Swift/BlueSocket.git", majorVersion: 0, minor: 11),
-        .Package(url: "https://github.com/baberthal/RingBuffer.git", majorVersion: 2),
-        .Package(url: "../Quick", majorVersion: 0, minor: 10),
-        .Package(url: "https://github.com/Quick/Nimble.git", majorVersion: 5)
+        .Package(url: "https://github.com/baberthal/RingBuffer.git", majorVersion: 2)
     ],
-    exclude: ["Makefile", "docs/*", "README.md"]
+    exclude: ["Makefile", "docs/*", "README.md", "Tools"]
 )

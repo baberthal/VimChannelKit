@@ -25,6 +25,7 @@ JAZZY = /Users/morgan/.rvm/gems/ruby-2.3.1@global/bin/jazzy
 OPEN = /usr/bin/open
 PKG_CONFIG = /usr/local/bin/pkg-config
 SWIFT_LINT = /usr/local/bin/swiftlint
+CLOC = /usr/local/bin/cloc
 
 ####################
 #   DEPENDENCIES   #
@@ -69,7 +70,7 @@ XCODEPROJ_FLAGS   = $(XCODEPROJ_CFLAGS) $(XCODEPROJ_LDFLAGS)
 ###########################
 #  Documentation Targets  #
 ###########################
-DOC_TARGETS = $(addprefix docs-,LoggerAPI Channel SimpleNet)
+DOC_TARGETS = $(addprefix docs-,LoggerAPI Channel)
 
 ################################################################################
 #                                   TARGETS                                    #
@@ -149,3 +150,6 @@ lint-autocorrect:
 
 lint-list-rules:
 	$(SWIFT_LINT) rules
+
+stats:
+	$(CLOC) --by-file-by-lang Sources
