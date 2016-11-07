@@ -15,10 +15,6 @@ public protocol DataProcessor: class {
   /// A flag to indicate that the socket has a request in progress
   var inProgress: Bool { get set }
 
-  /// A back reference to the `Connection` processing the socket that
-  /// this `IncomingDataProcessor` is processing.
-  weak var connection: Connection? { get set }
-
   /// Process data read from the socket.
   ///
   /// - parameter buffer: An NSData object containing the data that was read in

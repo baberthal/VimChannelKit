@@ -18,10 +18,6 @@ public class MessageProcessor: DataProcessor {
 
   // MARK: - Public Properties
 
-  /// A back reference to the `Connection` processing the socket that
-  /// this `MessageProcessor` is working on
-  public weak var connection: Connection?
-
   /// The `ChannelDelegate` that will handle the message post-processing
   public weak var delegate: ChannelDelegate?
 
@@ -87,7 +83,7 @@ public class MessageProcessor: DataProcessor {
   ///
   /// - parameter from: An NSData object containing the bytes to be written to the socket.
   public func write(from data: Data) {
-    connection?.write(from: data)
+    channel.write(from: data)
   }
 
   /// Write a sequence of bytes in an array to the socket
@@ -95,17 +91,17 @@ public class MessageProcessor: DataProcessor {
   /// - parameter from: An UnsafeRawPointer to the sequence of bytes to be written to the socket.
   /// - parameter length: The number of bytes to write to the socket.
   public func write(from bytes: UnsafeRawPointer, length: Int) {
-    connection?.write(from: bytes, length: length)
+    channel.write(from: bytes, length: length)
   }
 
   /// Write a sequence of bytes, from an unsafe buffer pointer to the socket
   public func write(from buffer: UnsafeBufferPointer<UInt8>) {
-    connection?.write(buffer: buffer)
+    channel.write(buffer: buffer)
   }
   
   /// Close the socket and MARK this handler as no longer in progress.
   public func close() {
-    connection?.prepareShutdown()
+    channel.prepareShutdown()
   }
 
   // MARK: - Private Helper Methods
