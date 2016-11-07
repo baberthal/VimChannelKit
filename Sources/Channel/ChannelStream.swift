@@ -13,8 +13,8 @@ import Socket
 
 // MARK: - ChannelStream
 
-public class ChannelStream: ChannelBackend {
-  /// The `low-water` MARK for our input channel. All received messages should
+public class ChannelStream {
+  /// The `low-water` mark for our input channel. All received messages should
   /// be a vaild JSON array, so we look for a string at least as long as `"[]"`.
   public static let ioLowWater = "[]".lengthOfBytes(using: .utf8)
 
