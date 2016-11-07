@@ -9,6 +9,8 @@
 import Foundation
 import SwiftyJSON
 
+// MARK: - VimCommand
+
 /// With a JSON channel the process can send commands to Vim that will be
 /// handled by Vim internally, it does not require a handler for the channel.
 ///
@@ -30,73 +32,115 @@ import SwiftyJSON
 /// ````
 ///
 /// Errors in these commands are normally not reported to avoid them messing up
-/// the display.  If you do want to see them, set the 'verbose' option to 3 or
-/// higher.
-public enum VimCommandKind {
-  case redraw
-  case ex
-  case normal
-  case expr
-  case call
+/// the display.  If you do want to see them, set the 'verbose' option (in Vim) 
+/// to 3 or higher.
+public struct VimCommand {
+  /// The internal enum we use to build the command.
+  let _command: CommandKind
+
+  /// Create a VimCommand.
+  ///
+  /// - parameter command: The enum value used to build the command.
+  init(_ command: CommandKind) {
+    self._command = command
+  }
+
+  /// Represents the kind of command that can be sent to Vim over a channel.
+  /// 
+  /// We separate this from `VimCommand` so we can have default values when
+  /// constructing each command.
+  enum CommandKind {
+    /// A redraw command. 
+    case redraw(Bool)
+    /// An ex-mode command.
+    case ex(String)
+    /// A normal-mode command.
+    case normal(String)
+    /// Evaluate an expression.
+    case expr(String, Int?)
+    /// Call a vim function.
+    case call(String, JSON, Int?)
+  }
 }
 
-/// Protocol that describes a type of vim command
-public protocol VimCommandLike: JSONSerializable {
-  /// The `kind` of command. See (`VimCommandKind`)
-  static var kind: VimCommandKind { get }
-}
+// MARK: - JSONSerializable
 
-public final class VimCommand {
-  /// The other commands do not update the screen, so that you can send a sequence
-  /// of commands without the cursor moving around.  You must end with the "redraw"
-  /// command to show any changed text and show the cursor where it belongs.
-  public struct Redraw: VimCommandLike {
-    public static let kind: VimCommandKind = .redraw
-
-    /// Set this to `true` if the redraw should be forced.
-    public let forced: Bool
-
-    /// Create a new `redraw` command.
-    ///
-    /// - parameter forced: True if the redraw should be forced (`redraw!`)
-    public init(_ forced: Bool = false) {
-      self.forced = forced
-    }
-
-    public var json: JSON {
+extension VimCommand: JSONSerializable {
+  public var json: JSON {
+    switch self._command {
+    case .redraw(let forced):
       return ["redraw", forced ? "force" : ""]
+
+    case .ex(let command):
+      return ["ex", command]
+
+    case .normal(let command):
+      return ["normal", command]
+
+    case .expr(let expression, let id):
+      if let id = id {
+        return ["expr", expression, id]
+      } else {
+        return ["expr", expression]
+      }
+
+    case .call(let fn, let args, let id):
+      if let id = id {
+        return ["call", fn, args, id]
+      } else {
+        return ["call", fn, args]
+      }
     }
   }
 
+  public func jsonString(using encoding: String.Encoding) -> String? {
+    return json.rawString(encoding)
+  }
+
+  public func rawData() throws -> Data {
+    return try json.rawData()
+  }
+}
+
+// MARK: - Static Methods
+
+extension VimCommand {
+  /// Create a redraw command.
+  ///
+  /// The other commands do not update the screen, so that you can send a sequence
+  /// of commands without the cursor moving around.  You must end with the "redraw"
+  /// command to show any changed text and show the cursor where it belongs.
+  ///
+  /// - parameter forced: Whether the `redraw` should be forced.
+  ///
+  /// - returns: a `Redraw` command.
+  public static func redraw(forced: Bool = false) -> VimCommand {
+    return VimCommand(.redraw(forced))
+  }
+
+  /// Create an ex command.
+  ///
   /// The "ex" command is executed as any Ex command.  There is no response for
   /// completion or error.  You could use functions in an autoload script:
   ///
   /// ````
-  /// VimCommand.Ex("call myscript#MyFunc(arg)")
+  /// VimCommand.ex("call myscript#MyFunc(arg)")
   /// ````
   ///
   /// You can also use "call feedkeys()" to insert any key sequence.
   ///
   /// When there is an error a message is written to the channel log, if it exists,
   /// and v:errmsg is set to the error.
-  public struct Ex: VimCommandLike {
-    public static let kind: VimCommandKind = .ex
-
-    /// The ex command to be executed
-    public var command: String
-
-    /// Create a new `ex` command to send to vim.
-    ///
-    /// - parameter command: The `ex` command to execute.
-    public init(_ command: String) {
-      self.command = command
-    }
-
-    public var json: JSON {
-      return ["ex", command]
-    }
+  ///
+  /// - parameter command: The command to execute.
+  ///
+  /// - returns: an `Ex` command.
+  public static func ex(command: String) -> VimCommand {
+    return VimCommand(.ex(command))
   }
 
+  /// Create a normal-mode command.
+  ///
   /// The "normal" command is executed like with ":normal!", commands are not
   /// mapped.
   ///
@@ -104,24 +148,16 @@ public final class VimCommand {
   /// ````
   /// VimCommand.Normal("zO")
   /// ````
-  public struct Normal: VimCommandLike {
-    public static let kind: VimCommandKind = .normal
-
-    /// The `normal` command to be executed
-    public var command: String
-
-    /// Create a new `normal` command to send to vim.
-    ///
-    /// - parameter command: The `normal` command to execute.
-    public init(_ command: String) {
-      self.command = command
-    }
-
-    public var json: JSON {
-      return ["normal", command]
-    }
+  ///
+  /// - parameter command: The command to execute.
+  ///
+  /// - returns: a `Normal`-mode command.
+  public static func normal(command: String) -> VimCommand {
+    return VimCommand(.normal(command))
   }
 
+  /// Create an expression command.
+  ///
   /// The "expr" command can be used to get the result of an expression.  For
   /// example, to get the number of lines in the current buffer:
   /// ````
@@ -156,36 +192,17 @@ public final class VimCommand {
   /// ````
   ///
   /// There is no second argument in the request.
-  public struct Expr: VimCommandLike {
-    public static let kind: VimCommandKind = .expr
-
-    /// The `expression` to be evaluated
-    public var expression: String
-
-    /// An optional message number.  This is nil by default.
-    /// If this is set, vim will send a response to the expression command,
-    /// identified by this number.
-    public var id: Int?
-
-    /// Create a new `expr` command to send to vim.
-    ///
-    /// - parameter expression: The `expression` to evaluate.
-    /// - parameter id: The `id` of the message. Set this if you want to
-    ///   receive a response from Vim.
-    public init(_ expression: String, _ id: Int? = nil) {
-      self.expression = expression
-      self.id = id
-    }
-
-    public var json: JSON {
-      if let id = self.id {
-        return ["expr", expression, id]
-      }
-
-      return ["expr", expression]
-    }
+  ///
+  /// - parameter expression: The expression to evaluate.
+  /// - parameter id: An optional id. If this is set, Vim will send a response.
+  ///
+  /// - returns: an `Expr` command.
+  public static func expr(_ expression: String, id: Int? = nil) -> VimCommand {
+    return VimCommand(.expr(expression, id))
   }
 
+  /// Create an function call command.
+  ///
   /// This is similar to "expr", but instead of passing the whole expression as a
   /// string this passes the name of a function and a list of arguments.  This
   /// avoids the conversion of the arguments to a string and escaping and
@@ -198,102 +215,13 @@ public final class VimCommand {
   /// ````
   /// VimCommand.Call("setline", ["$", ["one", "two", "three"]])
   /// ````
-  public struct Call: VimCommandLike {
-    public static let kind: VimCommandKind = .call
-
-    /// The `function` to be called
-    public var function: String
-
-    /// The arguments to the function
-    public var arguments: JSON
-
-    /// An optional message number.  This is nil by default.
-    /// If this is set, vim will send a response to the expression command,
-    /// identified by this number.
-    public var id: Int?
-
-    /// Create a new `expr` command to send to vim.
-    ///
-    /// - parameter function: The name of the `function` to call.
-    /// - parameter args: The arguments to pass to `function`.
-    /// - parameter id: The `id` of the message. Set this if you want to
-    ///   receive a response from Vim.
-    public init(_ function: String, _ args: JSON, _ id: Int? = nil) {
-      self.function = function
-      self.arguments = args
-      self.id = id
-    }
-
-    /// Create a new `expr` command to send to vim.
-    ///
-    /// - parameter function: The name of the `function` to call.
-    /// - parameter args: The arguments to pass to `function`.
-    /// - parameter id: The `id` of the message. Set this if you want to
-    ///   receive a response from Vim.
-    public init(function: String, args: JSON, id: Int? = nil) {
-      self.init(function, args, id)
-    }
-
-    public var json: JSON {
-      if let id = self.id {
-        return ["call", function, arguments, id]
-      }
-
-      return ["call", function, arguments]
-    }
-  }
-
-  /// Create a redraw command.
-  ///
-  /// - parameter forced: Whether the `redraw` should be forced.
-  /// - returns: a `Redraw` command.
-  public static func redraw(_ forced: Bool = false) -> Redraw {
-    return Redraw(forced)
-  }
-
-  /// Create an ex command.
-  ///
-  /// - parameter command: The command to execute.
-  /// - returns: an `Ex` command.
-  public static func ex(_ command: String) -> Ex {
-    return Ex(command)
-  }
-
-  /// Create a normal-mode command.
-  ///
-  /// - parameter command: The command to execute.
-  /// - returns: a `Normal`-mode command.
-  public static func normal(_ command: String) -> Normal {
-    return Normal(command)
-  }
-
-  /// Create an expression command.
-  ///
-  /// - parameter expression: The expression to evaluate.
-  /// - parameter id: An optional id. If this is set, Vim will send a response.
-  /// - returns: an `Expr` command.
-  public static func expr(_ expression: String, id: Int? = nil) -> Expr {
-    return Expr(expression, id)
-  }
-
-  /// Create an function call command.
   ///
   /// - parameter function: The name of the function to call.
   /// - parameter args: A json-compatible array with arguments to the function.
   /// - parameter id: An optional id. If this is set, Vim will send a response.
+  ///
   /// - returns: a `Call` command.
-  public static func call(function: String, args: JSON, id: Int? = nil) -> Call {
-    return Call(function: function, args: args, id: id)
-  }
-}
-
-
-extension VimCommandLike {
-  public func jsonString(using encoding: String.Encoding) -> String? {
-    return json.rawString(encoding)
-  }
-
-  public func rawData() throws -> Data {
-    return try json.rawData()
+  public static func call(function: String, args: JSON, id: Int? = nil) -> VimCommand {
+    return VimCommand(.call(function, args, id))
   }
 }
