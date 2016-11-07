@@ -13,7 +13,9 @@ import Socket
 
 // MARK: - ChannelStream
 
-public class ChannelStream {
+/// A `ChannelBackend` implementation for channels that communicate via
+/// `stdio` streams.
+public class ChannelStream: ChannelBackend {
   /// The `low-water` mark for our input channel. All received messages should
   /// be a vaild JSON array, so we look for a string at least as long as `"[]"`.
   public static let ioLowWater = "[]".lengthOfBytes(using: .utf8)
@@ -30,10 +32,10 @@ public class ChannelStream {
   public weak var delegate: ChannelDelegate?
 
   /// A back reference to the channel we are serving
-  public weak var channel: Channel!
+  public weak var channel: Channel?
 
   /// The associated data processor
-  public var processor: MessageProcessor
+  public var processor: MessageProcessor!
 
   /// The input DispatchIO stream for communication
   private var inputStream: DispatchIO!
@@ -50,7 +52,7 @@ public class ChannelStream {
   init(_ channel: Channel) {
     self.channel   = channel
     self.delegate  = channel.delegate
-    self.processor = MessageProcessor(channel: channel, using: channel.delegate!)
+    self.processor = MessageProcessor(backend: self, using: channel.delegate)
   }
 
   /// Create a ChannelStream serving a given `Channel` over `stdin` and `stdout`.
@@ -91,6 +93,11 @@ public class ChannelStream {
     }
   }
 
+  func prepareToClose() {
+    // Don't need to do anything special here
+    stop()
+  }
+
   /// Write a sequence of bytes in an UnsafeBufferPointer to the channel
   ///
   /// - parameter from: An UnsafeBufferPointer to the sequence of bytes to be written
@@ -100,11 +107,37 @@ public class ChannelStream {
     self.write(data: data)
   }
 
+  /// Write a sequence of bytes to the channel
+  ///
+  /// The default implementation simply forwards to `write(from:)`
+  ///
+  /// - parameter from: An UnsafePointer<UInt8> that contains the bytes to be written
+  /// - parameter count: The number of bytes to write
+  internal func write(from bytes: UnsafePointer<UInt8>, count: Int) {
+    let buffer = UnsafeBufferPointer(start: bytes, count: count)
+    self.write(from: buffer)
+  }
+
+  /// Write DispatchData to the channel.
+  ///
+  /// - parameter data: DispatchData to write to the channel.
   func write(data: DispatchData) {
     self.outputStream.write(offset: 0,
                             data: data,
                             queue: DispatchQueue.global(),
                             ioHandler: {_, _, _ in })
+  }
+
+  /// Write as much data to the socket as possible, buffering the rest
+  ///
+  /// The default implementation simply forwards to `write(from:)`
+  ///
+  /// - parameter data: The Data struct containing the bytes to write
+  internal func write(from data: Data) {
+    data.withUnsafeBytes { (bytePointer: UnsafePointer<UInt8>) in
+      let buffer = UnsafeBufferPointer(start: bytePointer, count: data.count)
+      self.write(from: buffer)
+    }
   }
 
   // MARK: - Private Methods
