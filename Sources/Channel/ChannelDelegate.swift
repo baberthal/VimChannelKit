@@ -32,8 +32,7 @@ public protocol ChannelDelegate: class {
   /// - returns: an optional response body to send back to the client
   ///
   /// - seealso: `Channel.respondTo(message:with:)`
-  @discardableResult
-  func channel(_ channel: Channel, didReceiveMessage message: Message) -> JSON?
+  func channel(_ channel: Channel, didReceiveMessage message: Message)
 
   /// The channel was opened.
   ///
