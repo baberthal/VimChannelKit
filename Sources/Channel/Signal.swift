@@ -2,7 +2,7 @@
 //
 // This source file is part of the VimChannelKit open source project
 //
-// Copyright (c) 2014 - 2016 
+// Copyright (c) 2014 - 2016
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // -----------------------------------------------------------------------------
@@ -12,41 +12,69 @@
 // -----------------------------------------------------------------------------
 
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-import Darwin.C
+  import Darwin.C
 #elseif os(Linux) || os(FreeBSD) || os(Android) || os(PS4)
-import Glibc
+  import Glibc
 #endif
 
 /// Represents a Unix Signal
 public enum Signal {
-  case hup    /* hangup */
-  case int    /* interrupt */
-  case quit   /* quit */
-  case ill    /* illegal instruction (not reset when caught) */
-  case trap   /* trace trap (not reset when caught) */
-  case abrt   /* abort() */
-  case fpe    /* floating point exception */
-  case kill	  /* kill (cannot be caught or ignored) */
-  case bus	  /* bus error */
-  case segv	  /* segmentation violation */
-  case sys	  /* bad argument to system call */
-  case pipe	  /* write on a pipe with no one to read it */
-  case alrm	  /* alarm clock */
-  case term	  /* software termination signal from kill */
-  case urg	  /* urgent condition on IO channel */
-  case stop	  /* sendable stop signal not from tty */
-  case tstp	  /* stop signal from tty */
-  case cont	  /* continue a stopped process */
-  case chld	  /* to parent on child stop or exit */
-  case ttin	  /* to readers pgrp upon background tty read */
-  case ttou	  /* like TTIN for output if (tp->t_local&LTOSTOP) */
-  case xcpu   /* exceeded CPU time limit */
-  case xfsz   /* exceeded file size limit */
-  case vtalrm /* virtual time alarm */
-  case prof   /* profiling time alarm */
-  case usr1   /* user-defined signal 1 */
-  case usr2   /* user-defined signal 2 */
+  /// hangup
+  case hup
+  /// interrupt
+  case int
+  /// quit
+  case quit
+  /// illegal instruction (not reset when caught)
+  case ill
+  /// trace trap (not reset when caught)
+  case trap
+  /// abort()
+  case abrt
+  /// floating point exception
+  case fpe
+  /// kill (cannot be caught or ignored)
+  case kill
+  /// bus error
+  case bus
+  /// segmentation violation
+  case segv
+  /// bad argument to system call
+  case sys
+  /// write on a pipe with no one to read it
+  case pipe
+  /// alarm clock
+  case alrm
+  /// software termination signal from kill
+  case term
+  /// urgent condition on IO channel
+  case urg
+  /// sendable stop signal not from tty
+  case stop
+  /// stop signal from tty
+  case tstp
+  /// continue a stopped process
+  case cont
+  /// to parent on child stop or exit
+  case chld
+  /// to readers pgrp upon background tty read
+  case ttin
+  /// like TTIN for output if (tp->t_local&LTOSTOP)
+  case ttou
+  /// exceeded CPU time limit
+  case xcpu
+  /// exceeded file size limit
+  case xfsz
+  /// virtual time alarm
+  case vtalrm
+  /// profiling time alarm
+  case prof
+  /// user-defined signal 1
+  case usr1
+  /// user-defined signal 2
+  case usr2
 
+  /// Returns the raw Int32 value of the signal
   public var rawValue: Int32 {
     switch self {
     case .hup:    return SIGHUP
@@ -81,6 +109,7 @@ public enum Signal {
 }
 
 extension Signal: RawRepresentable {
+  /// Initialize with a raw Int32 value
   public init?(rawValue: Int32) {
     switch rawValue {
     case SIGHUP:    self = .hup
@@ -114,4 +143,3 @@ extension Signal: RawRepresentable {
     }
   }
 }
-    

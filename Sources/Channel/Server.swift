@@ -18,6 +18,8 @@ import LoggerAPI
 
 // MARK: Server
 
+/// The `Server` class is a basic TCP Socket Server implementation that can be used to
+/// create channels to Vim.
 public class Server {
   // MARK: - Properties
 

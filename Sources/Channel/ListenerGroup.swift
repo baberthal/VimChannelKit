@@ -14,6 +14,8 @@
 import Dispatch
 
 extension Server {
+  /// A class that provides a set of helper functions that enables a caller to wait
+  /// for a group of listener blocks to finish executing.
   final class ListenerGroup {
     /// This is really just a namespace, so no initializer.
     private init() {}
