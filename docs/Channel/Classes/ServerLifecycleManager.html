@@ -20,7 +20,7 @@
         <a class="header-link" href="../index.html">
           Channel Docs
         </a>
-         (99% documented)
+         (100% documented)
       </p>
     
         <p class="header-col header-col--secondary">
@@ -77,9 +77,6 @@
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/ServerLifecycleManager.html">ServerLifecycleManager</a>
               </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C7Channel3Vim">Vim</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -126,9 +123,6 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/JSONSerializable.html">JSONSerializable</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols.html#/s:P7Channel14ServerDelegate">ServerDelegate</a>
               </li>
             </ul>
           </li>
@@ -520,6 +514,113 @@ It stores and invokes callbacks based on events encountered by the <code><a href
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7Channel22ServerLifecycleManager24addDispatchSignalHandlerFT9forSignalOS_6SignalFT_T__T_"></a>
+                    <a name="//apple_ref/swift/Method/addDispatchSignalHandler(forSignal:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7Channel22ServerLifecycleManager24addDispatchSignalHandlerFT9forSignalOS_6SignalFT_T__T_">addDispatchSignalHandler(forSignal:_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Add a handler for a signal, using a DispatchSource</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">addDispatchSignalHandler</span><span class="p">(</span><span class="n">forSignal</span> <span class="nv">signal</span><span class="p">:</span> <span class="kt"><a href="../Enums/Signal.html">Signal</a></span><span class="p">,</span> <span class="n">_</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>signal</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The signal to handle.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>callback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The action to invoke upon delivery of <code>signal</code>.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7Channel22ServerLifecycleManager19removeSignalHandlerFT9forSignalOS_6Signal_T_"></a>
+                    <a name="//apple_ref/swift/Method/removeSignalHandler(forSignal:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7Channel22ServerLifecycleManager19removeSignalHandlerFT9forSignalOS_6Signal_T_">removeSignalHandler(forSignal:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Remove a handler for a given signal, reverting to the default action.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">removeSignalHandler</span><span class="p">(</span><span class="n">forSignal</span> <span class="nv">signal</span><span class="p">:</span> <span class="kt"><a href="../Enums/Signal.html">Signal</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>signal</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The signal for which to remove the handler.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </div>
@@ -528,7 +629,7 @@ It stores and invokes callbacks based on events encountered by the <code><a href
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2016 <a class="link" href="" target="_blank" rel="external">J. Morgan Lieberthal</a>. All rights reserved. (Last updated: 2016-11-07)</p>
+      <p>&copy; 2016 <a class="link" href="" target="_blank" rel="external">J. Morgan Lieberthal</a>. All rights reserved. (Last updated: 2016-11-08)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>

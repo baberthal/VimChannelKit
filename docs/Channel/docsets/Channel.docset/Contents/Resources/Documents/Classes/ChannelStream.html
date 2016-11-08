@@ -20,7 +20,7 @@
         <a class="header-link" href="../index.html">
           Channel Docs
         </a>
-         (99% documented)
+         (100% documented)
       </p>
     
         <p class="header-col header-col--secondary">
@@ -77,9 +77,6 @@
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/ServerLifecycleManager.html">ServerLifecycleManager</a>
               </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C7Channel3Vim">Vim</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -126,9 +123,6 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/JSONSerializable.html">JSONSerializable</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols.html#/s:P7Channel14ServerDelegate">ServerDelegate</a>
               </li>
             </ul>
           </li>
@@ -265,60 +259,6 @@ be a vaild JSON array, so we look for a string at least as long as <code>&quot;[
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:vC7Channel13ChannelStream8delegateXwGSqPS_15ChannelDelegate__"></a>
-                    <a name="//apple_ref/swift/Property/delegate" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vC7Channel13ChannelStream8delegateXwGSqPS_15ChannelDelegate__">delegate</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Channel delegate that will handle the request-response cycle</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">delegate</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ChannelDelegate.html">ChannelDelegate</a></span><span class="p">?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:vC7Channel13ChannelStream7channelXwGSqCS_7Channel_"></a>
-                    <a name="//apple_ref/swift/Property/channel" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vC7Channel13ChannelStream7channelXwGSqCS_7Channel_">channel</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>A back reference to the channel we are serving</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt"><a href="../Classes/Channel.html">Channel</a></span><span class="p">?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:vC7Channel13ChannelStream9processorGSQCS_16MessageProcessor_"></a>
                     <a name="//apple_ref/swift/Property/processor" class="dashAnchor"></a>
                     <a class="token" href="#/s:vC7Channel13ChannelStream9processorGSQCS_16MessageProcessor_">processor</a>
@@ -343,6 +283,33 @@ be a vaild JSON array, so we look for a string at least as long as <code>&quot;[
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7Channel13ChannelStream7channelXwGSqCS_7Channel_"></a>
+                    <a name="//apple_ref/swift/Property/channel" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7Channel13ChannelStream7channelXwGSqCS_7Channel_">channel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The owning Channel instance</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt"><a href="../Classes/Channel.html">Channel</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
             <div class="task-group">
@@ -357,9 +324,9 @@ be a vaild JSON array, so we look for a string at least as long as <code>&quot;[
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC7Channel13ChannelStreamcFCS_7ChannelS0_"></a>
-                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7Channel13ChannelStreamcFCS_7ChannelS0_">init(_:)</a>
+                    <a name="/s:FC7Channel13ChannelStreamcFT8delegatePS_15ChannelDelegate__S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(delegate:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7Channel13ChannelStreamcFT8delegatePS_15ChannelDelegate__S0_">init(delegate:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -374,116 +341,9 @@ be a vaild JSON array, so we look for a string at least as long as <code>&quot;[
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt"><a href="../Classes/Channel.html">Channel</a></span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="nf">init</span><span class="p">(</span><span class="nv">delegate</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ChannelDelegate.html">ChannelDelegate</a></span><span class="p">)</span></code></pre>
 
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:FC7Channel13ChannelStreamcFT7servingCS_7Channel_S0_"></a>
-                    <a name="//apple_ref/swift/Method/init(serving:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7Channel13ChannelStreamcFT7servingCS_7Channel_S0_">init(serving:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Create a ChannelStream serving a given <code><a href="../Classes/Channel.html">Channel</a></code> over <code>stdin</code> and <code>stdout</code>.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="n">serving</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt"><a href="../Classes/Channel.html">Channel</a></span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>channel</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The channel we are serving.</p>
-
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:FC7Channel13ChannelStreamcFT7servingCS_7Channel10overSocketC6Socket6Socket_S0_"></a>
-                    <a name="//apple_ref/swift/Method/init(serving:overSocket:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7Channel13ChannelStreamcFT7servingCS_7Channel10overSocketC6Socket6Socket_S0_">init(serving:overSocket:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Create a ChannelStream with a given <code>Socket</code>.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="n">serving</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt"><a href="../Classes/Channel.html">Channel</a></span><span class="p">,</span> <span class="n">overSocket</span> <span class="nv">socket</span><span class="p">:</span> <span class="kt">Socket</span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>channel</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The channel we are serving.</p>
-
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>socket</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The socket we are serving.</p>
-
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -841,7 +701,7 @@ be a vaild JSON array, so we look for a string at least as long as <code>&quot;[
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2016 <a class="link" href="" target="_blank" rel="external">J. Morgan Lieberthal</a>. All rights reserved. (Last updated: 2016-11-07)</p>
+      <p>&copy; 2016 <a class="link" href="" target="_blank" rel="external">J. Morgan Lieberthal</a>. All rights reserved. (Last updated: 2016-11-08)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>

@@ -20,7 +20,7 @@
         <a class="header-link" href="../index.html">
           Channel Docs
         </a>
-         (99% documented)
+         (100% documented)
       </p>
     
         <p class="header-col header-col--secondary">
@@ -77,9 +77,6 @@
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/ServerLifecycleManager.html">ServerLifecycleManager</a>
               </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C7Channel3Vim">Vim</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -126,9 +123,6 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/JSONSerializable.html">JSONSerializable</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols.html#/s:P7Channel14ServerDelegate">ServerDelegate</a>
               </li>
             </ul>
           </li>
@@ -178,33 +172,6 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:vC7Channel10Connection7channelXwGSqCS_7Channel_"></a>
-                    <a name="//apple_ref/swift/Property/channel" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vC7Channel10Connection7channelXwGSqCS_7Channel_">channel</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>A weak reference to the associated channel.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">internal(set)</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt"><a href="../Classes/Channel.html">Channel</a></span><span class="p">?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:vC7Channel10Connection9processorGSQCS_16MessageProcessor_"></a>
                     <a name="//apple_ref/swift/Property/processor" class="dashAnchor"></a>
                     <a class="token" href="#/s:vC7Channel10Connection9processorGSQCS_16MessageProcessor_">processor</a>
@@ -223,6 +190,33 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight"><code><span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">processor</span><span class="p">:</span> <span class="kt"><a href="../Classes/MessageProcessor.html">MessageProcessor</a></span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7Channel10Connection7channelXwGSqCS_7Channel_"></a>
+                    <a name="//apple_ref/swift/Property/channel" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7Channel10Connection7channelXwGSqCS_7Channel_">channel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A back reference to the owning <code><a href="../Classes/Channel.html">Channel</a></code> instance</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">weak</span> <span class="k">var</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt"><a href="../Classes/Channel.html">Channel</a></span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -340,60 +334,6 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:vC7Channel10Connection8delegateXwGSqPS_15ChannelDelegate__"></a>
-                    <a name="//apple_ref/swift/Property/delegate" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vC7Channel10Connection8delegateXwGSqPS_15ChannelDelegate__">delegate</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The channel delegate that will handle requests</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">weak</span> <span class="k">var</span> <span class="nv">delegate</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ChannelDelegate.html">ChannelDelegate</a></span><span class="p">?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:vC7Channel10Connection14fileDescriptorVs5Int32"></a>
-                    <a name="//apple_ref/swift/Property/fileDescriptor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vC7Channel10Connection14fileDescriptorVs5Int32">fileDescriptor</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>File descriptor for the socket</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">var</span> <span class="nv">fileDescriptor</span><span class="p">:</span> <span class="kt">Int32</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:vC7Channel10Connection6sockfdVs5Int32"></a>
                     <a name="//apple_ref/swift/Property/sockfd" class="dashAnchor"></a>
                     <a class="token" href="#/s:vC7Channel10Connection6sockfdVs5Int32">sockfd</a>
@@ -404,7 +344,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Same as <code><a href="../Classes/Connection.html#/s:vC7Channel10Connection14fileDescriptorVs5Int32">fileDescriptor</a></code></p>
+                        <p>Same as <code>fileDescriptor</code></p>
 
                       </div>
                       <div class="declaration">
@@ -496,16 +436,62 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Create a connection over <code><a href="../Classes/Connection.html#/s:vC7Channel10Connection6socketC6Socket6Socket">socket</a></code>, using <code>delegate</code> to handle messages.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Connection</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ChannelBackend.html">ChannelBackend</a></span></code></pre>
+                          <pre class="highlight"><code><span class="nf">init</span><span class="p">(</span><span class="nv">socket</span><span class="p">:</span> <span class="kt">Socket</span><span class="p">,</span> <span class="n">using</span> <span class="nv">delegate</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ChannelDelegate.html">ChannelDelegate</a></span><span class="p">,</span> <span class="n">managedBy</span> <span class="nv">manager</span><span class="p">:</span> <span class="kt"><a href="../Classes/ConnectionManager.html">ConnectionManager</a></span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>socket</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The socket over which the connection will communicate.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>delegate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The delegate of the channel this connection serves.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>manager</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The connection manager that will manage the lifecycle of this connection.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -800,7 +786,7 @@ Otherwise, immediately close the socket.</p>
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2016 <a class="link" href="" target="_blank" rel="external">J. Morgan Lieberthal</a>. All rights reserved. (Last updated: 2016-11-07)</p>
+      <p>&copy; 2016 <a class="link" href="" target="_blank" rel="external">J. Morgan Lieberthal</a>. All rights reserved. (Last updated: 2016-11-08)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
