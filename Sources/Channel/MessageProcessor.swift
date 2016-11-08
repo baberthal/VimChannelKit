@@ -150,8 +150,18 @@ public class MessageProcessor: DataProcessor {
     self.state = .complete
 
     DispatchQueue.global().async { [unowned self] in
-      self.channel.delegate?.channel(self.channel, didReceiveMessage: self.request)
       defer { self.state = .reset }
+
+      if self.request.id > 0 {
+        self.channel.delegate?.channel(self.channel, didReceiveMessage: self.request)
+      } else if self.request.id < 0 {
+        guard let command = self.channel.sentCommands.removeValue(forKey: self.request.id) else {
+          Log.debug("Received message with id \(self.request.id), but did not send a command")
+          return
+        }
+
+        self.channel.delegate?.channel(self.channel, receivedResponse: self.request, to: command)
+      }
     }
   }
 }

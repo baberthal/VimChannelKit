@@ -24,6 +24,10 @@ public class Channel {
   /// The backend for our channel
   let backend: ChannelBackend
 
+  /// Keeps track of commands that were sent with the optional `id` parameter, because
+  /// we are expecting a response to them.
+  var sentCommands = [Int: VimCommand]()
+
   /// Keeps track of registered servers, but does not hold a reference to them.
   fileprivate static var registeredServers = [(server: Unmanaged<Server>, port: Int)]()
 
@@ -87,6 +91,22 @@ public class Channel {
   public func send(command: VimCommand) {
     do {
       let data = try command.rawData()
+
+      switch command._command {
+      case .expr(_, let id):
+        if let id = id {
+          self.sentCommands[id] = command
+        }
+
+      case .call(_, _, let id):
+        if let id = id {
+          self.sentCommands[id] = command
+        }
+
+      default:
+        break
+      }
+
       self.backend.write(from: data)
     } catch let error {
       Log.error("Error sending command: \(command) -- \(error.localizedDescription)")

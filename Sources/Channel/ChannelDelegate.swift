@@ -38,4 +38,11 @@ public protocol ChannelDelegate: class {
   ///
   /// - parameter channel: The channel that was opened.
   func channelDidOpen(_ channel: Channel)
+
+  /// The channel received a response to a command.
+  ///
+  /// - parameter channel: The channel that received the response.
+  /// - parameter response: The response that the channel received.
+  /// - parameter command: The command the response responded to.
+  func channel(_ channel: Channel, receivedResponse response: Message, to command: VimCommand)
 }
