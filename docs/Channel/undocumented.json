@@ -1,0 +1,19 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/morgan/projects/swift/VimChannelKit/Sources/Channel/Connection.swift",
+      "line": 64,
+      "symbol": "Connection.init(socket:using:managedBy:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/morgan/projects/swift/VimChannelKit/Sources/Channel/Vim.swift",
+      "line": 12,
+      "symbol": "Vim",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/morgan/projects/swift/VimChannelKit"
+}

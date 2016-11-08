@@ -1,0 +1,19 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/morgan/projects/swift/VimChannelKit/Sources/LoggerAPI/ASLLogger.swift",
+      "line": null,
+      "symbol": "ASLLogger",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/morgan/projects/swift/VimChannelKit/Sources/LoggerAPI/ASLLogger.swift",
+      "line": 12,
+      "symbol": "ASLLogger",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/morgan/projects/swift/VimChannelKit"
+}
