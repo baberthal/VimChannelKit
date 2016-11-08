@@ -5,6 +5,7 @@
 //  Created by Morgan Lieberthal on 10/30/16.
 //
 //
+
 import Foundation
 import Dispatch
 import Socket
@@ -60,6 +61,11 @@ public class Connection: ChannelBackend {
 
   // MARK: - Initializers
 
+  /// Create a connection over `socket`, using `delegate` to handle messages.
+  ///
+  /// - parameter socket: The socket over which the connection will communicate.
+  /// - parameter delegate: The delegate of the channel this connection serves.
+  /// - parameter manager: The connection manager that will manage the lifecycle of this connection.
   init(socket: Socket, using delegate: ChannelDelegate, managedBy manager: ConnectionManager) {
     self.readQueue  = createQueue(forSocket: socket, type: .read)
     self.writeQueue = createQueue(forSocket: socket, type: .write)
@@ -78,11 +84,11 @@ public class Connection: ChannelBackend {
   // MARK: - Methods
 
   /// Starts the channel.
-  func start() {
-  }
+  func start() {}
 
   /// Stops the channel.
   func stop() {
+    prepareToClose()
   }
 
   /// Read available data from the socket, into `readBuffer`
