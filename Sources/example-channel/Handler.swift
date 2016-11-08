@@ -51,6 +51,9 @@ class Handler: ChannelDelegate {
       channel.respondTo(message: message, with: "got it!")
     } else if bodyString == "move" {
       channel.send(command: .normal(command: "w"))
+    } else if bodyString == "evalexpr" {
+      let command = VimCommand.expr("line('$')", id: -1)
+      channel.send(command: command)
     }
   }
   
@@ -64,5 +67,14 @@ class Handler: ChannelDelegate {
     }
 
     self.activeChannel = channel
+  }
+  
+  /// The channel received a response to a command.
+  ///
+  /// - parameter channel: The channel that received the response.
+  /// - parameter response: The response that the channel received.
+  /// - parameter command: The command the response responded to.
+  public func channel(_ channel: Channel, receivedResponse response: Message, to command: VimCommand) {
+    Log.info("Received response: \(response) to command: \(command)")
   }
 }
