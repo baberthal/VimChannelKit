@@ -21,8 +21,11 @@ public class MessageProcessor: DataProcessor {
 
   // MARK: - Public Properties
 
-  /// The `ChannelDelegate` that will handle the message post-processing
-  public weak var delegate: ChannelDelegate?
+  /// A back reference to the channel
+  weak var channel: Channel!
+
+  /// The channel's delegate
+  weak var delegate: ChannelDelegate?
 
   /// A flag that indicates that there is a request in progress
   public var inProgress = true
@@ -147,8 +150,7 @@ public class MessageProcessor: DataProcessor {
     self.state = .complete
 
     DispatchQueue.global().async { [unowned self] in
-      guard let channel = self.backend.channel else { return }
-      self.delegate?.channel(channel, didReceiveMessage: self.request)
+      self.channel.delegate?.channel(self.channel, didReceiveMessage: self.request)
       defer { self.state = .reset }
     }
   }

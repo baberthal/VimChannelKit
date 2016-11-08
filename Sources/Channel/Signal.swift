@@ -11,14 +11,15 @@
 ///
 // -----------------------------------------------------------------------------
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-  import Darwin.C
-#elseif os(Linux) || os(FreeBSD) || os(Android) || os(PS4)
-  import Glibc
-#endif
+import Libc
+
+// MARK: - Signal 
 
 /// Represents a Unix Signal
 public enum Signal {
+  /// Alias sigaction because it is ambiguous in other contexts
+  typealias Action = sigaction
+
   /// hangup
   case hup
   /// interrupt
@@ -108,6 +109,8 @@ public enum Signal {
   }
 }
 
+// MARK: - RawRepresentable 
+
 extension Signal: RawRepresentable {
   /// Initialize with a raw Int32 value
   public init?(rawValue: Int32) {
@@ -141,5 +144,13 @@ extension Signal: RawRepresentable {
     case SIGUSR2:   self = .usr2
     default:        return nil
     }
+  }
+}
+
+// MARK: - Hashable
+
+extension Signal: Hashable {
+  public var hashValue: Int {
+    return self.rawValue.hashValue
   }
 }

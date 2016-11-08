@@ -14,11 +14,15 @@ import LoggerAPI
 public class Connection: ChannelBackend {
   // MARK: - Properties
 
-  /// A weak reference to the associated channel.
-  public internal(set) weak var channel: Channel?
-
   /// The MessageProcessor that will process messages that are received via this connection
   public private(set) var processor: MessageProcessor!
+
+  /// A back reference to the owning `Channel` instance
+  weak var channel: Channel? {
+    didSet {
+      self.processor.channel = channel
+    }
+  }
 
   /// The queue this connection is using
   let readQueue: DispatchQueue
@@ -32,12 +36,6 @@ public class Connection: ChannelBackend {
   /// Weak reference to the manager that manages this connection
   weak var manager: ConnectionManager?
 
-  /// The channel delegate that will handle requests
-  weak var delegate: ChannelDelegate?
-
-  /// File descriptor for the socket
-  var fileDescriptor: Int32 { return socket.socketfd }
-
   /// Same as `fileDescriptor`
   var sockfd: Int32 { return socket.socketfd }
 
@@ -50,6 +48,7 @@ public class Connection: ChannelBackend {
   /// Buffer for socket reads
   private var readBuffer = Data()
 
+  // FIXME: Use `RingBuffer`s
   /// Buffer for socket writes
   private var writeBuffer = Data()
 
@@ -66,7 +65,6 @@ public class Connection: ChannelBackend {
     self.writeQueue = createQueue(forSocket: socket, type: .write)
 
     self.socket    = socket
-    self.delegate  = delegate
     self.manager   = manager
     self.processor = MessageProcessor(backend: self, using: delegate)
 

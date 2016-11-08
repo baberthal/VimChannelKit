@@ -49,7 +49,7 @@ public class Server {
   /// Create a server.
   ///
   /// - parameter port: The port for the server to listen on.
-  public init(port: Int, delegate: ChannelDelegate? = nil) {
+  init(port: Int, delegate: ChannelDelegate? = nil) {
     self.port = port
     self.delegate = delegate
   }
@@ -91,6 +91,16 @@ public class Server {
     return self
   }
 
+  /// Stop listening for new connections.
+  public func stop() {
+    defer { self.delegate = nil }
+
+    if let listeningSocket = self.listeningSocket {
+      self.state = .stopped
+      listeningSocket.close()
+    }
+  }
+
   /// Add a callback to be invoked when the server is started
   ///
   /// - parameter callback: callback that will be invoked upon successful startup by the receiver
@@ -118,6 +128,17 @@ public class Server {
   @discardableResult
   public func onFailure(_ callback: @escaping (Swift.Error) -> Void) -> Self {
     self.lifecycleManager.addFailureCallback(callback)
+    return self
+  }
+
+  /// Add a callback to be invoked when the server has received a specific Unix signal.
+  ///
+  /// - parameter signal: The signal to listen for.
+  /// - parameter callback: callback that will be invoked when the receiver encounters `signal`
+  /// - returns: the receiver of this call
+  @discardableResult
+  public func onSignal(_ signal: Signal, _ callback: @escaping () -> Void) -> Self {
+    self.lifecycleManager.addDispatchSignalHandler(forSignal: signal, callback)
     return self
   }
 

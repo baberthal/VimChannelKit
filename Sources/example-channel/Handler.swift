@@ -49,6 +49,8 @@ class Handler: ChannelDelegate {
 
     if bodyString == "hello!" {
       channel.respondTo(message: message, with: "got it!")
+    } else if bodyString == "move" {
+      channel.send(command: .normal(command: "w"))
     }
   }
   

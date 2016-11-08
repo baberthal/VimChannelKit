@@ -12,6 +12,9 @@
 ///
 // -----------------------------------------------------------------------------
 
+import Libc
+import Dispatch
+
 /// This class is responsible for managing the lifecycle of a `Server`.
 /// It stores and invokes callbacks based on events encountered by the `Server` instance.
 class ServerLifecycleManager {
@@ -28,6 +31,9 @@ class ServerLifecycleManager {
 
   /// Callbacks to be invoked upon the server encountering an error.
   private var failureCallbacks = [ErrorCallback]()
+
+  /// Callbacks to be invoked upon the delivery of a Unix signal, using `DispatchSource`s
+  private var signalSources = [Signal: DispatchSourceSignal]()
 
   // MARK: - Initializers
 
@@ -86,5 +92,27 @@ class ServerLifecycleManager {
   /// - parameter callback: The callback to add.
   func addFailureCallback(_ callback: @escaping ErrorCallback) {
     self.failureCallbacks.append(callback)
+  }
+
+  /// Add a handler for a signal, using a DispatchSource
+  ///
+  /// - parameter signal: The signal to handle.
+  /// - parameter callback: The action to invoke upon delivery of `signal`.
+  func addDispatchSignalHandler(forSignal signal: Signal, _ callback: @escaping () -> Void) {
+    _ = Libc.signal(signal.rawValue, SIG_IGN)
+    let queue = DispatchQueue.global()
+    let source = DispatchSource.makeSignalSource(signal: signal.rawValue, queue: queue)
+    source.setEventHandler(handler: callback)
+    self.signalSources[signal] = source
+    source.resume()
+  }
+
+  /// Remove a handler for a given signal, reverting to the default action.
+  ///
+  /// - parameter signal: The signal for which to remove the handler.
+  func removeSignalHandler(forSignal signal: Signal) {
+    guard let sigsource = self.signalSources[signal] else { return }
+    sigsource.cancel()
+    _ = Libc.signal(signal.rawValue, SIG_DFL)
   }
 }

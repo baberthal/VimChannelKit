@@ -28,14 +28,15 @@ public class ChannelStream: ChannelBackend {
 
   // MARK: - Properties
 
-  /// Channel delegate that will handle the request-response cycle
-  public weak var delegate: ChannelDelegate?
-
-  /// A back reference to the channel we are serving
-  public weak var channel: Channel?
-
   /// The associated data processor
   public var processor: MessageProcessor!
+
+  /// The owning Channel instance
+  public weak var channel: Channel? {
+    didSet {
+      self.processor.channel = channel
+    }
+  }
 
   /// The input DispatchIO stream for communication
   private var inputStream: DispatchIO!
@@ -49,41 +50,18 @@ public class ChannelStream: ChannelBackend {
   // MARK: - Initializers
 
   /// Internal designated initializer
-  init(_ channel: Channel) {
-    self.channel   = channel
-    self.delegate  = channel.delegate
-    self.processor = MessageProcessor(backend: self, using: channel.delegate)
-  }
-
-  /// Create a ChannelStream serving a given `Channel` over `stdin` and `stdout`.
-  ///
-  /// - parameter channel: The channel we are serving.
-  public convenience init(serving channel: Channel) {
-    self.init(channel)
-
+  init(delegate: ChannelDelegate) {
+    self.processor = MessageProcessor(backend: self, using: delegate)
     self.inputStream  = createDispatchIO(for: STDIN_FILENO, cleanupHandler: self.cleanupHandler)
     self.outputStream = createDispatchIO(for: STDOUT_FILENO, cleanupHandler: self.cleanupHandler)
   }
 
-  /// Create a ChannelStream with a given `Socket`.
-  ///
-  /// - parameter channel: The channel we are serving.
-  /// - parameter socket: The socket we are serving.
-  public convenience init(serving channel: Channel, overSocket socket: Socket) {
-    self.init(channel)
-    self.inputStream  = createDispatchIO(for: socket.socketfd, cleanupHandler: self.cleanupHandler)
-    self.outputStream = self.inputStream
-  }
-
-
   // MARK: - Public Methods
 
   public func start() {
-    self.inputStream.read(offset: 0,
-                          length: Int.max,
-                          queue: DispatchQueue.global(),
-                          ioHandler: { [unowned self] (done, data, err) in
-                            self.ioReadHandler(done: done, data: data, errorCode: err)
+    self.inputStream.read(offset: 0, length: Int.max, queue: DispatchQueue.global(), ioHandler: {
+      [unowned self] (done, data, err) in
+        self.ioReadHandler(done: done, data: data, errorCode: err)
     })
   }
 

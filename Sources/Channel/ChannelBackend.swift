@@ -18,9 +18,6 @@ protocol ChannelBackend: class {
   /// A reference to the `Channel` this `ChannelBackend` belongs to
   weak var channel: Channel? { get set }
 
-  /// A reference to the `ChannelDelegate` this `ChannelBackend` serves
-  weak var delegate: ChannelDelegate? { get }
-
   /// Start the backend
   func start()
 

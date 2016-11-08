@@ -225,3 +225,15 @@ extension VimCommand {
     return VimCommand(.call(function, args, id))
   }
 }
+
+// MARK: - Custom{,Debug}StringConvertible
+
+extension VimCommand: CustomStringConvertible, CustomDebugStringConvertible {
+  public var description: String {
+    return self.jsonString() ?? "<error>"
+  }
+
+  public var debugDescription: String {
+    return description
+  }
+}
