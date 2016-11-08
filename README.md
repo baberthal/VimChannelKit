@@ -1,4 +1,4 @@
-# SocketServer
+# VimChannelKit
 
 ## Overview
-A simple UNIX socket server, written in swift.
+A library for creating and communicating over Vim channels.
