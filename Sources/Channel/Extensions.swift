@@ -33,11 +33,18 @@ extension Socket {
 import LoggerAPI
 
 extension Log {
+  /// Log a message, if and only if `condition` returns `true`.
+  ///
+  /// - parameter message: The message to log if `condition` is true.
+  /// - parameter condition: The condition to evaluate.
   public static func error(_ message: String, `if` condition: @autoclosure() -> Bool) {
     guard condition() else { return }
     Log.error(message)
   }
 
+  /// Log a socket error.
+  ///
+  /// - parameter socketError: The `Socket.Error` to log.
   public static func error(socketError: Socket.Error) {
     Log.error("Socket Error: (\(socketError.errorCode)) \(socketError.description)")
   }

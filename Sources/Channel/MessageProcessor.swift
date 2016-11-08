@@ -37,7 +37,12 @@ public class MessageProcessor: DataProcessor {
 
   /// An internal enum for state
   enum State {
-    case reset, initial, complete
+    /// Reset to the initial state on the next pass
+    case reset,
+    /// The initial state
+    initial,
+    /// The message has been parsed successfully
+    complete
   }
 
   /// The state of our processor

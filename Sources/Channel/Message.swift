@@ -41,6 +41,7 @@ extension Message: JSONInitializable {
     }
   }
 
+  /// Default initializer
   init() {
     self.body = JSON.null
   }
@@ -57,6 +58,9 @@ extension Message: JSONInitializable {
     return json.rawString(using, options: [])
   }
 
+  /// Update a message from parsed json.
+  ///
+  /// - parameter json: The parsed `JSON` object from which to update the message.
   public mutating func update(from json: JSON) {
     if let id = json[0].int {
       self.id = id
