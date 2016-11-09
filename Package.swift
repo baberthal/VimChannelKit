@@ -8,7 +8,7 @@ let package = Package(
         Target(name: "example-channel", dependencies: ["Channel", "LoggerAPI"])
     ],
     dependencies: [
-        .Package(url: "https://github.com/baberthal/SwiftyJSON.git", majorVersion: 3),
+        .Package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", majorVersion: 3),
         .Package(url: "https://github.com/IBM-Swift/BlueSocket.git", majorVersion: 0, minor: 11),
         .Package(url: "https://github.com/baberthal/RingBuffer.git", majorVersion: 2)
     ],
