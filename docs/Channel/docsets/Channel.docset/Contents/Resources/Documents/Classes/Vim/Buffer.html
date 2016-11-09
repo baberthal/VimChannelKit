@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>CommandKind Enum Reference</title>
+    <title>Buffer Struct Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset="utf-8">
@@ -11,9 +11,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Enum/CommandKind" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Struct/Buffer" class="dashAnchor"></a>
 
-    <a title="CommandKind Enum Reference"></a>
+    <a title="Buffer Struct Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -35,7 +35,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="../../index.html">Channel Reference</a>
       <img class="carat" src="../../img/carat.png" />
-      CommandKind Enum Reference
+      Buffer Struct Reference
     </p>
 
     <div class="content-wrapper">
@@ -158,17 +158,14 @@
 
         <section class="section">
           <div class="section-content">
-            <h1>CommandKind</h1>
+            <h1>Buffer</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight"><code><span class="kd">enum</span> <span class="kt">CommandKind</span></code></pre>
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Buffer</span></code></pre>
 
                 </div>
               </div>
-            <p>Represents the kind of command that can be sent to Vim over a channel.</p>
-
-<p>We separate this from <code><a href="../../Structs/VimCommand.html">VimCommand</a></code> so we can have default values when
-constructing each command.</p>
+            <p>Represents a Vim buffer, containing source text.</p>
 
           </div>
         </section>
@@ -180,9 +177,9 @@ constructing each command.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind6redrawFMS1_FSbS1_"></a>
-                    <a name="//apple_ref/swift/Element/redraw" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind6redrawFMS1_FSbS1_">redraw</a>
+                    <a name="/s:vVC7Channel3Vim6Buffer6numberSi"></a>
+                    <a name="//apple_ref/swift/Property/number" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer6numberSi">number</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -190,30 +187,26 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A redraw command.</p>
+                        <p>Returns this buffers <code>buffer number</code>.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">redraw</span><span class="p">(</span><span class="kt">Bool</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">number</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind2exFMS1_FSSS1_"></a>
-                    <a name="//apple_ref/swift/Element/ex" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind2exFMS1_FSSS1_">ex</a>
+                    <a name="/s:vVC7Channel3Vim6Buffer14completeBufferSS"></a>
+                    <a name="//apple_ref/swift/Property/completeBuffer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer14completeBufferSS">completeBuffer</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -221,30 +214,26 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>An ex-mode command.</p>
+                        <p>Returns the complete buffer&rsquo;s string representation.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">ex</span><span class="p">(</span><span class="kt">String</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">completeBuffer</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind6normalFMS1_FSSS1_"></a>
-                    <a name="//apple_ref/swift/Element/normal" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind6normalFMS1_FSSS1_">normal</a>
+                    <a name="/s:vVC7Channel3Vim6Buffer5linesGSaSS_"></a>
+                    <a name="//apple_ref/swift/Property/lines" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer5linesGSaSS_">lines</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -252,30 +241,26 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A normal-mode command.</p>
+                        <p>Returns the lines of the text in a buffer, including line endings.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">normal</span><span class="p">(</span><span class="kt">String</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">lines</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind4exprFMS1_FTSSGSqSi__S1_"></a>
-                    <a name="//apple_ref/swift/Element/expr" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind4exprFMS1_FTSSGSqSi__S1_">expr</a>
+                    <a name="/s:vVC7Channel3Vim6Buffer9variablesGSaSS_"></a>
+                    <a name="//apple_ref/swift/Property/variables" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer9variablesGSaSS_">variables</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -283,30 +268,26 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Evaluate an expression.</p>
+                        <p>Returns the variables set in the buffer.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">expr</span><span class="p">(</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Int</span><span class="p">?)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">variables</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind4callFMS1_FTSSV10SwiftyJSON4JSONGSqSi__S1_"></a>
-                    <a name="//apple_ref/swift/Element/call" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind4callFMS1_FTSSV10SwiftyJSON4JSONGSqSi__S1_">call</a>
+                    <a name="/s:vVC7Channel3Vim6Buffer10shiftWidthSi"></a>
+                    <a name="//apple_ref/swift/Property/shiftWidth" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer10shiftWidthSi">shiftWidth</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -314,14 +295,119 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Call a vim function.</p>
+                        <p>Returns the current <code>shiftwidth</code> of the buffer. </p>
+
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <code><a href="../../Classes/Vim/Buffer.html#/s:vVC7Channel3Vim6Buffer2swSi">sw</a></code>
+
+</div>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">call</span><span class="p">(</span><span class="kt">String</span><span class="p">,</span> <span class="kt">JSON</span><span class="p">,</span> <span class="kt">Int</span><span class="p">?)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">shiftWidth</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vVC7Channel3Vim6Buffer2swSi"></a>
+                    <a name="//apple_ref/swift/Property/sw" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer2swSi">sw</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Alias for <code><a href="../../Classes/Vim/Buffer.html#/s:vVC7Channel3Vim6Buffer10shiftWidthSi">shiftWidth</a></code></p>
+
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <code><a href="../../Classes/Vim/Buffer.html#/s:vVC7Channel3Vim6Buffer10shiftWidthSi">shiftWidth</a></code>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sw</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vVC7Channel3Vim6Buffer7tabStopSi"></a>
+                    <a name="//apple_ref/swift/Property/tabStop" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer7tabStopSi">tabStop</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the current <code>tabstop</code> of the buffer.</p>
+
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <code><a href="../../Classes/Vim/Buffer.html#/s:vVC7Channel3Vim6Buffer2tsSi">ts</a></code>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">tabStop</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vVC7Channel3Vim6Buffer2tsSi"></a>
+                    <a name="//apple_ref/swift/Property/ts" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim6Buffer2tsSi">ts</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Alias for <code><a href="../../Classes/Vim/Buffer.html#/s:vVC7Channel3Vim6Buffer7tabStopSi">tabStop</a></code></p>
+
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <code><a href="../../Classes/Vim/Buffer.html#/s:vVC7Channel3Vim6Buffer7tabStopSi">tabStop</a></code>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">ts</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                         </div>
                       </div>

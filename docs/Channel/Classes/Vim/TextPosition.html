@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>CommandKind Enum Reference</title>
+    <title>TextPosition Struct Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset="utf-8">
@@ -11,9 +11,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Enum/CommandKind" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Struct/TextPosition" class="dashAnchor"></a>
 
-    <a title="CommandKind Enum Reference"></a>
+    <a title="TextPosition Struct Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -35,7 +35,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="../../index.html">Channel Reference</a>
       <img class="carat" src="../../img/carat.png" />
-      CommandKind Enum Reference
+      TextPosition Struct Reference
     </p>
 
     <div class="content-wrapper">
@@ -158,17 +158,14 @@
 
         <section class="section">
           <div class="section-content">
-            <h1>CommandKind</h1>
+            <h1>TextPosition</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight"><code><span class="kd">enum</span> <span class="kt">CommandKind</span></code></pre>
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">TextPosition</span><span class="p">:</span> <span class="kt">RawRepresentable</span><span class="p">,</span> <span class="kt">Hashable</span></code></pre>
 
                 </div>
               </div>
-            <p>Represents the kind of command that can be sent to Vim over a channel.</p>
-
-<p>We separate this from <code><a href="../../Structs/VimCommand.html">VimCommand</a></code> so we can have default values when
-constructing each command.</p>
+            <p>Represents a position in the source code.</p>
 
           </div>
         </section>
@@ -176,13 +173,20 @@ constructing each command.</p>
         <section class="section">
           <div class="section-content">
             <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Properties"></a>
+                <a name="//apple_ref/swift/Section/Properties" class="dashAnchor"></a>
+                <a href="#/Properties">
+                  <h3 class="section-name">Properties</h3>
+                </a>
+              </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind6redrawFMS1_FSbS1_"></a>
-                    <a name="//apple_ref/swift/Element/redraw" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind6redrawFMS1_FSbS1_">redraw</a>
+                    <a name="/s:vVC7Channel3Vim12TextPosition8rawValueTSiSi_"></a>
+                    <a name="//apple_ref/swift/Property/rawValue" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim12TextPosition8rawValueTSiSi_">rawValue</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -190,14 +194,68 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A redraw command.</p>
+                        <p>Representable as a tuple =&gt; <code>(line, column)</code></p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">redraw</span><span class="p">(</span><span class="kt">Bool</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">rawValue</span><span class="p">:</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vVC7Channel3Vim12TextPosition6columnSi"></a>
+                    <a name="//apple_ref/swift/Property/column" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim12TextPosition6columnSi">column</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Column in the source code.  1-based index.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">column</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vVC7Channel3Vim12TextPosition4lineSi"></a>
+                    <a name="//apple_ref/swift/Property/line" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vVC7Channel3Vim12TextPosition4lineSi">line</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Line in the source code.  1-based index.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">line</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
 
                         </div>
                       </div>
@@ -207,13 +265,20 @@ constructing each command.</p>
               </ul>
             </div>
             <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Initializers"></a>
+                <a name="//apple_ref/swift/Section/Initializers" class="dashAnchor"></a>
+                <a href="#/Initializers">
+                  <h3 class="section-name">Initializers</h3>
+                </a>
+              </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind2exFMS1_FSSS1_"></a>
-                    <a name="//apple_ref/swift/Element/ex" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind2exFMS1_FSSS1_">ex</a>
+                    <a name="/s:FVC7Channel3Vim12TextPositioncFT8rawValueTSiSi__S1_"></a>
+                    <a name="//apple_ref/swift/Method/init(rawValue:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FVC7Channel3Vim12TextPositioncFT8rawValueTSiSi__S1_">init(rawValue:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -221,16 +286,123 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>An ex-mode command.</p>
+                        <p>Initialize with a raw tuple.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">ex</span><span class="p">(</span><span class="kt">String</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">rawValue</span><span class="p">:</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">))</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>rawValue</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p><code>(line, column)</code> pair for the position.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FVC7Channel3Vim12TextPositioncFT_S1_"></a>
+                    <a name="//apple_ref/swift/Method/init()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FVC7Channel3Vim12TextPositioncFT_S1_">init()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Default initializer.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FVC7Channel3Vim12TextPositioncFT4lineSi6columnSi_S1_"></a>
+                    <a name="//apple_ref/swift/Method/init(line:column:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FVC7Channel3Vim12TextPositioncFT4lineSi6columnSi_S1_">init(line:column:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Create a new text position with a given <code><a href="../../Classes/Vim/TextPosition.html#/s:vVC7Channel3Vim12TextPosition4lineSi">line</a></code> and <code><a href="../../Classes/Vim/TextPosition.html#/s:vVC7Channel3Vim12TextPosition6columnSi">column</a></code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">line</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">column</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The line of the position in the source code.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>column</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The column of the position in the source code.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -238,13 +410,20 @@ constructing each command.</p>
               </ul>
             </div>
             <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Methods"></a>
+                <a name="//apple_ref/swift/Section/Methods" class="dashAnchor"></a>
+                <a href="#/Methods">
+                  <h3 class="section-name">Methods</h3>
+                </a>
+              </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind6normalFMS1_FSSS1_"></a>
-                    <a name="//apple_ref/swift/Element/normal" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind6normalFMS1_FSSS1_">normal</a>
+                    <a name="/s:vPs8Hashable9hashValueSi"></a>
+                    <a name="//apple_ref/swift/Property/hashValue" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vPs8Hashable9hashValueSi">hashValue</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -252,30 +431,25 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A normal-mode command.</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">normal</span><span class="p">(</span><span class="kt">String</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">hashValue</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind4exprFMS1_FTSSGSqSi__S1_"></a>
-                    <a name="//apple_ref/swift/Element/expr" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind4exprFMS1_FTSSGSqSi__S1_">expr</a>
+                    <a name="/s:ZFVC7Channel3Vim12TextPositionoi2eeFTS1_S1__Sb"></a>
+                    <a name="//apple_ref/swift/Method/==(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:ZFVC7Channel3Vim12TextPositionoi2eeFTS1_S1__Sb">==(_:_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -283,45 +457,21 @@ constructing each command.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Evaluate an expression.</p>
+                        <p>Returns true if the <code>lhs</code> operand is equal to the <code>rhs</code> operand.</p>
+
+<div class="aside aside-precondition">
+    <p class="aside-title">Precondition</p>
+    The text positions must refer to the same file.  If they
+refer to different files, the behavior is undefined.
+
+</div>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">expr</span><span class="p">(</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Int</span><span class="p">?)</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:FOV7Channel10VimCommand11CommandKind4callFMS1_FTSSV10SwiftyJSON4JSONGSqSi__S1_"></a>
-                    <a name="//apple_ref/swift/Element/call" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FOV7Channel10VimCommand11CommandKind4callFMS1_FTSSV10SwiftyJSON4JSONGSqSi__S1_">call</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Call a vim function.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">call</span><span class="p">(</span><span class="kt">String</span><span class="p">,</span> <span class="kt">JSON</span><span class="p">,</span> <span class="kt">Int</span><span class="p">?)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="o">==</span><span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">TextPosition</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">TextPosition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
                       </div>
